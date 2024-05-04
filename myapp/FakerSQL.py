@@ -1,11 +1,17 @@
 import mysql.connector
 from mysql.connector import Error
 from faker import Faker
+from faker.providers import address, date_time, job, person, phone_number
 import random
 
-fake = Faker()
+fake = Faker('tr_TR')
+fake.add_provider(address)
+fake.add_provider(date_time)
+fake.add_provider(job)
+fake.add_provider(person)
+fake.add_provider(phone_number)
 
-def generate_rapor_icerigi():
+def rapor_icerigi_uret():
     raporlar = [
         "Hasta, grip belirtileri göstermektedir: ateş, öksürük, boğaz ağrısı.",
         "Doktor, hastanın solunum hızını değerlendirdi ve normal sınırlarda olduğunu belirledi.",
@@ -42,25 +48,25 @@ def generate_rapor_icerigi():
     return random.choice(raporlar)
 
 try:
-    conn = mysql.connector.connect(
+    baglanti = mysql.connector.connect(
         host="localhost",
         user="root",
         password="1234",
         database="prolab"
     )
 
-    cursor = conn.cursor()
+    imlec = baglanti.cursor()
 
-    tables = ["TibbiRaporlar", "Randevular", "Yonetici", "Doktorlar", "Hastalar"]
+    tablolar = ["TibbiRaporlar", "Randevular", "Yonetici", "Doktorlar", "Hastalar"]
 
     # Tabloları sil
-    for table_name in tables:
-        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+    for tablo_adi in tablolar:
+        imlec.execute(f"DROP TABLE IF EXISTS {tablo_adi}")
 
     # Yeni tabloları oluştur
-    cursor.execute("""
+    imlec.execute("""
     CREATE TABLE IF NOT EXISTS Hastalar (
-        HastaID INT PRIMARY KEY AUTO_INCREMENT,
+        HastaID INT PRIMARY KEY,
         Ad VARCHAR(50),
         Soyad VARCHAR(50),
         DogumTarihi DATE,
@@ -70,9 +76,9 @@ try:
     )
     """)
 
-    cursor.execute("""
+    imlec.execute("""
     CREATE TABLE IF NOT EXISTS Doktorlar (
-        DoktorID INT PRIMARY KEY AUTO_INCREMENT,
+        DoktorID INT PRIMARY KEY,
         Ad VARCHAR(50),
         Soyad VARCHAR(50),
         UzmanlikAlani VARCHAR(100),
@@ -80,13 +86,13 @@ try:
     )
     """)
 
-    cursor.execute("""
+    imlec.execute("""
     CREATE TABLE IF NOT EXISTS Yonetici (
-        YoneticiID INT PRIMARY KEY AUTO_INCREMENT
+        YoneticiID INT PRIMARY KEY
     )
     """)
 
-    cursor.execute("""
+    imlec.execute("""
     CREATE TABLE IF NOT EXISTS Randevular (
         RandevuID INT PRIMARY KEY AUTO_INCREMENT,
         HastaID INT,
@@ -98,7 +104,7 @@ try:
     )
     """)
 
-    cursor.execute("""
+    imlec.execute("""
     CREATE TABLE IF NOT EXISTS TibbiRaporlar (
         RaporID INT PRIMARY KEY AUTO_INCREMENT,
         RaporTarihi DATE,
@@ -113,63 +119,74 @@ try:
     """)
 
     # Yönetici tablosuna bir giriş ekle
-    cursor.execute("INSERT INTO Yonetici () VALUES ()")
+    imlec.execute("INSERT INTO Yonetici (YoneticiID) VALUES (1)")
 
-    # Fake verileri oluştur ve ekleyin
+    # Sahte verileri oluştur ve ekleyin
+    hastalar_id = set()  # Tüm hastaların ID'lerini saklayacak küme
+    doktorlar_id = set()  # Tüm doktorların ID'lerini saklayacak küme
+
     for _ in range(1000):
+        # Benzersiz bir HastaID üret
+        hasta_id = fake.random_number(digits=5, fix_len=True)
+        while hasta_id in hastalar_id:  # Eğer daha önce kullanıldıysa, tekrar üret
+            hasta_id = fake.random_number(digits=5, fix_len=True)
+        hastalar_id.add(hasta_id)
+
         ad = fake.first_name()
         soyad = fake.last_name()
         dogum_tarihi = fake.date_of_birth(minimum_age=18, maximum_age=100)
         cinsiyet = random.choice(["Erkek", "Kadın"])
         telefon = fake.phone_number()[:20]
         adres = fake.address()
-        cursor.execute("""
-        INSERT INTO Hastalar (Ad, Soyad, DogumTarihi, Cinsiyet, TelefonNumarasi, Adres) 
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """, (ad, soyad, dogum_tarihi, cinsiyet, telefon, adres))
+        imlec.execute("""
+        INSERT INTO Hastalar (HastaID, Ad, Soyad, DogumTarihi, Cinsiyet, TelefonNumarasi, Adres) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (hasta_id, ad, soyad, dogum_tarihi, cinsiyet, telefon, adres))
 
     for _ in range(100):
+        # Benzersiz bir DoktorID üret
+        doktor_id = fake.random_number(digits=5, fix_len=True)
+        while doktor_id in doktorlar_id:  # Eğer daha önce kullanıldıysa, tekrar üret
+            doktor_id = fake.random_number(digits=5, fix_len=True)
+        doktorlar_id.add(doktor_id)
+
         ad = fake.first_name()
         soyad = fake.last_name()
         uzmanlik_alani = fake.job()
         hastane = fake.company()
-        cursor.execute("""
-        INSERT INTO Doktorlar (Ad, Soyad, UzmanlikAlani, CalistigiHastane) 
-        VALUES (%s, %s, %s, %s)
-        """, (ad, soyad, uzmanlik_alani, hastane))
+        imlec.execute("""
+        INSERT INTO Doktorlar (DoktorID, Ad, Soyad, UzmanlikAlani, CalistigiHastane) 
+        VALUES (%s, %s, %s, %s, %s)
+        """, (doktor_id, ad, soyad, uzmanlik_alani, hastane))
 
-    hastalar = list(range(1, 1001))
-    doktorlar = list(range(1, 101))
-    random.shuffle(hastalar)
-    random.shuffle(doktorlar)
     for _ in range(600):
-        hasta_id = random.randint(1, 1000)
-        doktor_id = random.randint(1, 100)
+        hasta_id = random.choice(list(hastalar_id))
+        doktor_id = random.choice(list(doktorlar_id))
         tarih = fake.date_between(start_date='-1y', end_date='today')
         saat = fake.time(pattern="%H:%M:%S", end_datetime=None)
-        cursor.execute("""
+        imlec.execute("""
         INSERT INTO Randevular (HastaID, DoktorID, Tarih, Saat) 
         VALUES (%s, %s, %s, %s)
         """, (hasta_id, doktor_id, tarih, saat))
 
     for _ in range(400):
         rapor_tarihi = fake.date_between(start_date='-1y', end_date='today')
-        rapor_icerigi = generate_rapor_icerigi()
-        hasta_id = random.randint(1, 1000)
-        doktor_id = random.randint(1, 100)
+        rapor_icerigi = rapor_icerigi_uret()
+        hasta_id = random.choice(list(hastalar_id))
+        doktor_id = random.choice(list(doktorlar_id))
         yonetici_id = 1
-        cursor.execute("""
+        imlec.execute("""
         INSERT INTO TibbiRaporlar (RaporTarihi, RaporIcerigi, HastaID, DoktorID, YoneticiID) 
         VALUES (%s, %s, %s, %s, %s)
         """, (rapor_tarihi, rapor_icerigi, hasta_id, doktor_id, yonetici_id))
 
-    conn.commit()
+    baglanti.commit()
 
 except Error as e:
     print("MySQL hatası:", e)
 
 finally:
-    if conn.is_connected():
-        cursor.close()
-        conn.close()
+    if baglanti.is_connected():
+        imlec.close()
+        baglanti.close()
         print("MySQL bağlantısı kapatıldı")
