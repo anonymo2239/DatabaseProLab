@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'veritabani_adi',
+        'USER': 'kullanici_adi',
+        'PASSWORD': 'sifre',
+        'HOST': 'veritabani_sunucusu',
+        'PORT': 'port_numarasi',
     }
 }
 
