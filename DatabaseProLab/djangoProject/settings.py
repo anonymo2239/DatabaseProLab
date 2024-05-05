@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'veritabani_adi',
-        'USER': 'kullanici_adi',
-        'PASSWORD': 'sifre',
-        'HOST': 'veritabani_sunucusu',
-        'PORT': 'port_numarasi',
+        'NAME': 'prolab',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
