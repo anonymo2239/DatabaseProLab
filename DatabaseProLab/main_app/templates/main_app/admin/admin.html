@@ -73,7 +73,9 @@
                 <label for="sifre">Yönetici Şifre</label>
                 <input type="password" id="sifre" name="sifre" required>
             </div>
-            <button type="submit">Giriş Yap</button>
+            <a href="{% url 'admin_first' %}">
+                <button type="button" class="btn btn-primary">Giriş Yap</button>
+            </a>
         </form>
     </div>
 </body>
