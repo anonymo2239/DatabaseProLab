@@ -17,12 +17,12 @@
             background-color: #87CEEB;
             padding: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: space-between; /* Elemanları aralarında boşluk bırakarak hizalama */
+            align-items: flex-start; /* Üstten hizalama */
             gap: 10px; /* Elemanlar arası boşluk */
         }
         table {
-            width: 100%; /* Tablo genişliği */
+            width: 60%; /* Tablo genişliği */
             border-collapse: collapse; /* Kenar çizgilerini birleştir */
         }
         th, td {
@@ -35,45 +35,59 @@
             color: white;
         }
         .form-container {
-            width: 25%;
+            width: 35%; /* Form konteyneri genişliği */
             background-color: #fff;
             padding: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
         }
         .inputs {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            margin-right: 20px;
+            margin-bottom: 10px;
         }
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        input[type="text"], button {
+        .inputs input {
             padding: 10px;
-            margin: 5px;
+            margin-bottom: 5px;
             border: 1px solid #ccc;
             border-radius: 3px;
             font-size: 1em;
         }
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
         button {
-            background-color: #007BFF;
-            color: white;
+            padding: 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            font-size: 1em;
             cursor: pointer;
         }
+        button:first-child {
+            background-color: #28a745; /* Yeşil renk */
+            color: white;
+        }
+        button:nth-child(2) {
+            background-color: #dc3545; /* Kırmızı renk */
+            color: white;
+        }
+        button:nth-child(3) {
+            background-color: #007BFF; /* Mavi renk */
+            color: white;
+        }
+        button:last-child {
+            background-color: #6c757d; /* Gri renk */
+            color: white;
+        }
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Hasta Tablosu Düzenle</h1>
         <table>
             <tr>
                 <th>Hasta ID</th>
@@ -99,9 +113,9 @@
             <div class="inputs">
                 <input type="text" placeholder="Ad">
                 <input type="text" placeholder="Soyad">
-                <input type="text" placeholder="Doğum Tarihi">
+                <input type="text" placeholder="Doğum Tarihi (XX.XX.XXXX)">
                 <input type="text" placeholder="Cinsiyet">
-                <input type="text" placeholder="Telefon Numarası">
+                <input type="text" placeholder="Telefon Numarası (+90___ ___ __ __)">
                 <input type="text" placeholder="Adres">
             </div>
             <div class="buttons">
@@ -110,6 +124,8 @@
                 <button>Güncelle</button>
                 <button onclick="window.location.href='/admin-dashboard'">Geri</button>
             </div>
+            <br>
+            <textarea id="sqlQuery" rows="" cols="45" placeholder="SQL sorgularınızı buraya yazınız"></textarea>
         </div>
     </div>
 </body>

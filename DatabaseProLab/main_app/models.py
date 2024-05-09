@@ -18,4 +18,11 @@ class Hastalar(models.Model):
     hasta_telefonNo = models.CharField(max_length=14)
     hasta_adres = models.CharField(max_length=200)
 
-class
+class Sifreler(models.Model):
+    userID = models.IntegerField(primary_key=True)
+    password = models.CharField(max_length=20)
+
+class Yonetici(models.Model):
+    YoneticiID = models.IntegerField(primary_key=True)
+    yonetici_sifre = models.CharField(max_length=10)
+

@@ -64,7 +64,8 @@
             <img src="templates/main_app/admin/logo3.png" alt="Logo" id="alp" style="max-width: 100px; margin-bottom: 10px;">
             <h2>Cango Hastanesi Yönetici Girişi</h2>
         </div>
-        <form action="templates/main_app/admin/logo3.png" method="post">
+        <form action="{% url 'yonetici_login' %}" method="post">
+            {% csrf_token %}
             <div class="form-group">
                 <label for="id">Yönetici ID</label>
                 <input type="text" id="id" name="id" required>
@@ -73,9 +74,7 @@
                 <label for="sifre">Yönetici Şifre</label>
                 <input type="password" id="sifre" name="sifre" required>
             </div>
-            <a href="{% url 'admin_first' %}">
-                <button type="button" class="btn btn-primary">Giriş Yap</button>
-            </a>
+            <button type="submit">Giriş Yap</button>
         </form>
     </div>
 </body>

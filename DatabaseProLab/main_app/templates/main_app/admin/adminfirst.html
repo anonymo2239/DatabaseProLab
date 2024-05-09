@@ -54,9 +54,9 @@
             <img src="logo2.png" alt="Logo" style="height: 200px;">
             <h1>Yönetici Sayfasına Hoşgeldiniz</h1>
         </div>
-        <button onclick="window.location.href='/edit-patient-table'">Hasta Tablosunu Düzenle</button>
-        <button onclick="window.location.href='/edit-doctor-table'">Doktor Tablosunu Düzenle</button>
-        <button onclick="window.location.href='/add-medical-report'">Tıbbi Rapor Ekle</button>
+        <button onclick="window.location.href='{% url 'admin_second_patient' %}'">Hasta Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_doctor' %}'">Doktor Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_report' %}'">Tıbbi Rapor Ekle</button>
         <div class="footer">
             <button onclick="window.location.href='/logout'">Çıkış</button>
         </div>
