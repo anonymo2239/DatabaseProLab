@@ -49,6 +49,7 @@
     </style>
 </head>
 <body>
+
     <div class="admin-panel">
         <div class="header">
             <img src="logo2.png" alt="Logo" style="height: 200px;">
@@ -56,9 +57,10 @@
         </div>
         <button onclick="window.location.href='{% url 'admin_second_patient' %}'">Hasta Tablosunu Düzenle</button>
         <button onclick="window.location.href='{% url 'admin_second_doctor' %}'">Doktor Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_appointment' %}'">Randevu Tablosunu Düzenle</button>
         <button onclick="window.location.href='{% url 'admin_second_report' %}'">Tıbbi Rapor Ekle</button>
         <div class="footer">
-            <button onclick="window.location.href='/logout'">Çıkış</button>
+            <button onclick="window.location.href='{% url 'admin' %}'">Çıkış</button>
         </div>
     </div>
 </body>
