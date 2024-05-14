@@ -1,10 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Hasta Ana Sayfa</title>
+    <title>KOÜ Hastanesi Hasta Anasayfa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .nav-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons button {
+            background-color: #add8e6;
+            border: 1px solid #000;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-buttons button:hover {
+            background-color: #87ceeb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #add8e6;
+        }
+        .appointment-row {
+            background-color: #add8e6;
+        }
+        .appointment-row button {
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .appointment-row button:hover {
+            background-color: #ccc;
+        }
+    </style>
 </head>
 <body>
-
+    <h1>KOÜ Hastanesi Hasta Anasayfa</h1>
+    <h2>
+        <tr class="hastabilgi">
+            <td>{{ hasta.hastaid }}</td>
+            <td>{{ hasta.ad }}</td>
+            <td>{{ hasta.soyad }}</td>
+            <td>{{ hasta.dogumtarihi }}</td>
+            <td>{{ hasta.cinsiyet }}</td>
+            <td>{{ hasta.telefonnumarasi }}</td>
+            <td>{{ hasta.adres }}</td>
+        </tr>
+    </h2>
+    <div class="nav-buttons">
+        <button onclick="window.location.href='{% url 'randevu_al' %}'">Randevu Al</button>
+        <button onclick="window.location.href='{% url 'tibbi_raporlar_duzenle' %}'">Tıbbi Raporları Düzenle</button>
+        <button onclick="window.location.href='/hasta'">Çıkış</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Randevu No</th>
+                <th>Doktor ID</th>
+                <th>Tarih</th>
+                <th>Saat</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for randevu in randevular %}
+            <tr class="appointment-row">
+                <td>{{ randevu.id }}</td>
+                <td>{{ randevu.doktor_id }}</td>
+                <td>{{ randevu.tarih }}</td>
+                <td>{{ randevu.saat }}</td>
+                <td><button onclick="window.location.href='{% url 'randevu_iptal' randevu.id %}'">İptal Et</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

@@ -136,39 +136,21 @@
         <form method="POST">
             {% csrf_token %}
             <div class="inputs">
-                <input type="text" name="hastaid" placeholder="ID">
-                <input type="text" name="hasta_ad" placeholder="Ad">
-                <input type="text" name="hasta_soyad" placeholder="Soyad">
-                <input type="text" name="hasta_dogumTarihi" placeholder="Doğum Tarihi (XX.XX.XXXX)">
-                <input type="text" name="hasta_cinsiyet" placeholder="Cinsiyet">
-                <input type="text" name="hasta_telefonNo" placeholder="Telefon Numarası (+90___ ___ __ __)">
-                <input type="text" name="hasta_adres" placeholder="Adres">
+                <input type="text" name="doktorid" placeholder="ID">
+                <input type="text" name="doktor_ad" placeholder="Ad">
+                <input type="text" name="doktor_soyad" placeholder="Soyad">
+                <input type="text" name="doktor_uzmanlikalani" placeholder="Uzmanlık Alanı">
+                <input type="text" name="doktor_calistigihastane" placeholder="Çalıştığı Hastane">
             </div>
             <div class="buttons">
-                <button type="submit" name="action" value="execute">Sorguyu Çalıştır</button>
+                <button type="submit" name="action" value="add">Ekle</button>
+                <button type="submit" name="action" value="delete">Sil</button>
+                <button type="submit" name="action" value="update">Güncelle</button>
                 <button type="button" onclick="window.location.href='/yonetici/giris/anasayfa'">Geri</button>
             </div>
         </form>
         <br>
-        <textarea id="sqlQuery" rows="6" cols="97" placeholder="SQL sorgularınızı buraya yazınız"></textarea>
     </div>
 </div>
-<script>
-    document.getElementById('runSqlButton').addEventListener('click', function() {
-        var sqlQuery = document.getElementById('sqlQuery').value;
-        fetch('/run-sql/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: 'query=' + encodeURIComponent(sqlQuery)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response data, e.g., update the table with new data
-        });
-    });
-</script>
 </body>
 </html>
