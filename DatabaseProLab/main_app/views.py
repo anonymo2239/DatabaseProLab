@@ -73,9 +73,82 @@ def patient_login(request):
 
 
 def admin_second_patient(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'add':
+            # Formdan bilgileri al
+            hastaid = request.POST.get('hastaid')
+            hasta_ad = request.POST.get('hasta_ad')
+            hasta_soyad = request.POST.get('hasta_soyad')
+            hasta_dogum_tarihi = request.POST.get('hasta_dogumTarihi')
+            hasta_cinsiyet = request.POST.get('hasta_cinsiyet')
+            hasta_telefon = request.POST.get('hasta_telefonNo')
+            hasta_adres = request.POST.get('hasta_adres')
+
+            with connection.cursor() as cursor:
+                # Hastanın zaten var olup olmadığını kontrol et
+                cursor.execute("SELECT * FROM hastalar WHERE hastaid = %s", [hastaid])
+                row = cursor.fetchone()
+
+                if row is None:
+                    # Yeni Hasta ekle
+                    cursor.execute(
+                        "INSERT INTO hastalar (hastaid, ad, soyad, dogumtarihi, cinsiyet, telefonnumarasi, adres) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        [hastaid, hasta_ad, hasta_soyad, hasta_dogum_tarihi, hasta_cinsiyet, hasta_telefon, hasta_adres]
+                    )
+                    messages.success(request, 'Hasta başarıyla eklendi.')
+                else:
+                    messages.error(request, 'Bu ID ile zaten bir hasta mevcut.')
+
+        elif action == 'update':
+            # Formdan bilgileri al
+            hastaid = request.POST.get('hastaid')
+            hasta_ad = request.POST.get('hasta_ad')
+            hasta_soyad = request.POST.get('hasta_soyad')
+            hasta_dogum_tarihi = request.POST.get('hasta_dogum_tarihi')
+            hasta_cinsiyet = request.POST.get('hasta_cinsiyet')
+            hasta_telefon = request.POST.get('hasta_telefon')
+            hasta_adres = request.POST.get('hasta_adres')
+
+            with connection.cursor() as cursor:
+                # Hastanın var olup olmadığını kontrol et
+                cursor.execute("SELECT * FROM hastalar WHERE hastaid = %s", [hastaid])
+                row = cursor.fetchone()
+
+                if row is not None:
+                    # Hastayı güncelle
+                    cursor.execute(
+                        "UPDATE hastalar SET ad = %s, soyad = %s, dogumtarihi = %s, cinsiyet = %s, telefonnumarasi = %s, adres = %s WHERE hastaid = %s",
+                        [hasta_ad, hasta_soyad, hasta_dogum_tarihi, hasta_cinsiyet, hasta_telefon, hasta_adres, hastaid]
+                    )
+                    messages.success(request, 'Hasta başarıyla güncellendi.')
+                else:
+                    messages.error(request, 'Bu ID ile bir hasta bulunamadı.')
+
+        elif action == 'delete':
+            # Formdan bilgileri al
+            hastaid = request.POST.get('hastaid')
+
+            with connection.cursor() as cursor:
+                # Hastanın var olup olmadığını kontrol et
+                cursor.execute("SELECT * FROM hastalar WHERE hastaid = %s", [hastaid])
+                row = cursor.fetchone()
+
+                if row is not None:
+                    # Hastayı sil
+                    cursor.execute("DELETE FROM hastalar WHERE hastaid = %s", [hastaid])
+                    messages.success(request, 'Hasta başarıyla silindi.')
+                else:
+                    messages.error(request, 'Bu ID ile bir hasta bulunamadı.')
+
+        return redirect('admin_second_patient')
+
+    else:
+        # GET isteği için mevcut hastaları listele
         hastalar = Hastalar.objects.all()
         return render(request, 'main_app/admin/adminsecond_patient.html', {'hastalar': hastalar})
+
 
 
 def admin_second_doctor(request):
@@ -175,16 +248,16 @@ def admin_second_appointment(request):
 
 def yonetici_login(request):
     if request.method == 'POST':
-        username = request.POST.get('id')
-        password = request.POST.get('yoneticisifre')
+        password = request.POST.get('usersifre')
 
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM Yonetici WHERE YoneticiID = %s AND yonetici_sifre = %s", [username, password])
+            cursor.execute("SELECT * FROM Yonetici, Sifreler WHERE UserID = YoneticiID AND Password = %s", [password])
             user = cursor.fetchone()
 
-        if user is not None:
+        if user:
             return render(request, "main_app/admin/adminfirst.html")
         else:
+            messages.error(request, 'Yanlış kullanıcı adı veya şifre.')
             return HttpResponseRedirect('/yonetici/giris/')
 
     return render(request, 'main_app/admin/adminfirst.html')

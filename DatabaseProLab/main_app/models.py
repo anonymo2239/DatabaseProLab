@@ -8,8 +8,6 @@
 from django.db import models
 
 
-# python manage.py inspectdb > models.py ÇOK ÖNEMLİİİİİ
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -140,7 +138,7 @@ class Hastalar(models.Model):
     hastaid = models.IntegerField(db_column='HastaID', primary_key=True)  # Field name made lowercase.
     ad = models.CharField(db_column='Ad', max_length=50, blank=True, null=True)  # Field name made lowercase.
     soyad = models.CharField(db_column='Soyad', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    dogumtarihi = models.DateField(db_column='DogumTarihi', blank=True, null=True)  # Field name made lowercase.
+    dogumtarihi = models.CharField(db_column='DogumTarihi', max_length=50, blank=True, null=True)  # Field name made lowercase.
     cinsiyet = models.CharField(db_column='Cinsiyet', max_length=10, blank=True, null=True)  # Field name made lowercase.
     telefonnumarasi = models.CharField(db_column='TelefonNumarasi', max_length=20, blank=True, null=True)  # Field name made lowercase.
     adres = models.CharField(db_column='Adres', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -198,8 +196,8 @@ class Randevular(models.Model):
     randevuid = models.AutoField(db_column='RandevuID', primary_key=True)  # Field name made lowercase.
     hastaid = models.ForeignKey(Hastalar, models.DO_NOTHING, db_column='HastaID', blank=True, null=True)  # Field name made lowercase.
     doktorid = models.ForeignKey(Doktorlar, models.DO_NOTHING, db_column='DoktorID', blank=True, null=True)  # Field name made lowercase.
-    tarih = models.DateField(db_column='Tarih', blank=True, null=True)  # Field name made lowercase.
-    saat = models.TimeField(db_column='Saat', blank=True, null=True)  # Field name made lowercase.
+    tarih = models.CharField(db_column='Tarih', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    saat = models.CharField(db_column='Saat', max_length=50, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -207,7 +205,7 @@ class Randevular(models.Model):
 
 
 class Sifreler(models.Model):
-    userid = models.IntegerField(db_column='UserID', primary_key=True)  # Field name made lowercase.
+    userid = models.IntegerField(db_column='UserID', blank=True, null=True)  # Field name made lowercase.
     password = models.CharField(db_column='Password', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -217,7 +215,7 @@ class Sifreler(models.Model):
 
 class Tibbiraporlar(models.Model):
     raporid = models.AutoField(db_column='RaporID', primary_key=True)  # Field name made lowercase.
-    raportarihi = models.DateField(db_column='RaporTarihi', blank=True, null=True)  # Field name made lowercase.
+    raportarihi = models.CharField(db_column='RaporTarihi', max_length=50, blank=True, null=True)  # Field name made lowercase.
     raporicerigi = models.TextField(db_column='RaporIcerigi', blank=True, null=True)  # Field name made lowercase.
     hastaid = models.ForeignKey(Hastalar, models.DO_NOTHING, db_column='HastaID', blank=True, null=True)  # Field name made lowercase.
     doktorid = models.ForeignKey(Doktorlar, models.DO_NOTHING, db_column='DoktorID', blank=True, null=True)  # Field name made lowercase.
@@ -230,7 +228,6 @@ class Tibbiraporlar(models.Model):
 
 class Yonetici(models.Model):
     yoneticiid = models.IntegerField(db_column='YoneticiID', primary_key=True)  # Field name made lowercase.
-    yonetici_sifre = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
