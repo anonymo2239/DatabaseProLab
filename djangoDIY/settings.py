@@ -8,6 +8,9 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
+
+Https server start command
+python manage.py runserver_plus --cert-file cert.pem --key-file key.pem 0.0.0.0:8000
 """
 
 from pathlib import Path
@@ -25,12 +28,13 @@ SECRET_KEY = 'django-insecure-#a8i!0&*(v(0e6ym5yxxmzopk%%m^7e2h^t3$4ue05jwmcon&%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
     'myapp',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,7 +59,7 @@ ROOT_URLCONF = 'djangoDIY.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,3 +126,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# settings.py
+
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True

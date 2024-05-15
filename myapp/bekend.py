@@ -8,6 +8,25 @@ class User:
     def display_info(self):
         print("Username:", self.username)
 
+    def _connect_to_database(self):
+        try:
+            connection = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='1234',
+                database='prolab'
+            )
+            if connection.is_connected():
+                print("Connected to database")
+                return connection
+        except Error as e:
+            print("Error connecting to database:", e)
+
+    def close_connection(self):
+        if self.connection.is_connected():
+            self.connection.close()
+            print("Connection closed")
+
 
 class Admin(User):
     def __init__(self, username):

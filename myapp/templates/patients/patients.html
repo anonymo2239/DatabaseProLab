@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cango Hastanesi Hasta Girişi</title>
+    <title>KOÜ Hastanesi Hasta Girişi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,10 +55,12 @@
 <body>
     <div class="login-form">
         <div class="header">
-            <img src="logo2.png" alt="Logo" id="alp" style="max-width: 100px; margin-bottom: 10px;">
+            <img src="logo3.png" alt="Logo" id="alp" style="max-width: 100px; margin-bottom: 10px;">
             <h2>Cango Hastanesi Hasta Girişi</h2>
         </div>
-        <form action="logo2.png" method="post">
+        <!-- Form action güncellendi -->
+        <form action="{% url 'patient_login' %}" method="post">
+            {% csrf_token %} <!-- CSRF token eklendi -->
             <div class="form-group">
                 <label for="id">Hasta ID</label>
                 <input type="text" id="id" name="id" required>

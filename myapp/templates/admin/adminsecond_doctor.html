@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktor Tablosu Düzenle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%; /* Konteyner genişliği */
+            background-color: #87CEEB;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between; /* Elemanları aralarında boşluk bırakarak hizalama */
+            gap: 10px; /* Elemanlar arası boşluk */
+        }
+
+        .table-container {
+            flex: 1; /* Tablo konteynerini genişlet */
+        }
+
+        table {
+            width: 100%; /* Tablo genişliği */
+            border-collapse: collapse; /* Kenar çizgilerini birleştir */
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .form-container {
+            width: 40%; /* Form konteyneri genişliği */
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .inputs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .inputs input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button:first-child {
+            background-color: #28a745; /* Yeşil renk */
+            color: white;
+        }
+
+        button:nth-child(2) {
+            background-color: #dc3545; /* Kırmızı renk */
+            color: white;
+        }
+
+        button:nth-child(3) {
+            background-color: #007BFF; /* Mavi renk */
+            color: white;
+        }
+
+        button:last-child {
+            background-color: #6c757d; /* Gri renk */
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>Doktor ID</th>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Uzmanlık Alanı</th>
+                <th>Çalıştığı Hastane</th>
+            </tr>
+            {% for doktor in doktorlar %}
+                <tr>
+                    <td>{{ doktor.doktorid }}</td>
+                    <td>{{ doktor.ad }}</td>
+                    <td>{{ doktor.soyad }}</td>
+                    <td>{{ doktor.uzmanlikalani }}</td>
+                    <td>{{ doktor.calistigihastane }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="inputs">
+                <input type="text" name="doktorid" placeholder="ID">
+                <input type="text" name="doktor_ad" placeholder="Ad">
+                <input type="text" name="doktor_soyad" placeholder="Soyad">
+                <input type="text" name="doktor_uzmanlikalani" placeholder="Uzmanlık Alanı">
+                <input type="text" name="doktor_calistigihastane" placeholder="Çalıştığı Hastane">
+            </div>
+            <div class="buttons">
+                <button type="submit" name="action" value="add">Ekle</button>
+                <button type="submit" name="action" value="delete">Sil</button>
+                <button type="submit" name="action" value="update">Güncelle</button>
+                <button type="button" onclick="window.location.href='/yonetici/giris/anasayfa'">Geri</button>
+            </div>
+        </form>
+        <br>
+    </div>
+</div>
+</body>
+</html>
