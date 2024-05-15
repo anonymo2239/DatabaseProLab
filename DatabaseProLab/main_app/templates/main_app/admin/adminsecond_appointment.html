@@ -1,10 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randevu Tablosu Düzenle</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            text-align: right; /* Etiketleri sağa yasla */
+            margin-right: 10px; /* Etiket ile input arasında boşluk bırak */
+            flex: 1; /* Etiketlere esneklik ver */
+        }
+        .form-control {
+            width: 50%; /* Input genişliğini azalt */
+            flex: 2; /* Inputlara esneklik ver */
+        }
+        .form-group {
+            display: flex; /* Flexbox kullanarak label ve input'u yan yana getir */
+            align-items: center; /* İçerikleri dikey olarak ortala */
+            margin-bottom: 10px; /* Alt elemanlar arası boşluk */
+        }
+        table {
+            width: 100%; /* Tablo genişliğini artır */
+        }
+    </style>
 </head>
 <body>
+<div class="container mt-5">
+    <h2>(Yönetici Randevu Ekleyemez)</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Randevu No</th>
+                        <th>Hasta ID</th>
+                        <th>Doktor ID</th>
+                        <th>Tarih</th>
+                        <th>Saat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   {% for randevu in randevular %}
+                    <tr class="appointment-row">
+                        <td>{{ randevu.id }}</td>
+                        <td>{{ randevu.hastaid }}</td>
+                        <td>{{ randevu.doktor_id }}</td>
+                        <td>{{ randevu.tarih }}</td>
+                        <td>{{ randevu.saat }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="randevuid" class="form-label">Randevu ID</label>
+                    <input type="text" class="form-control" id="randevuid" name="randevuid" required>
+                </div>
+                <div class="form-group">
+                    <label for="hastaid" class="form-label">Hasta ID</label>
+                    <input type="text" class="form-control" id="hastaid" name="hastaid" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktorid" class="form-label">Doktor ID</label>
+                    <input type="text" class="form-control" id="doktorid" name="doktorid" required>
+                </div>
+                <div class="form-group">
+                    <label for="tarih" class="form-label">Doğum Tarihi</label>
+                    <input type="date" class="form-control" id="tarih" name="tarih" required>
+                </div>
+                <div class="form-group">
+                    <label for="saat" class="form-label">Saat</label>
+                    <input type="time" class="form-control" id="saat" name="saat" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-danger" name="action" value="delete">Sil</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="update">Güncelle</button>
+                    <button type="button" onclick="window.location.href='/yonetici/giris'">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

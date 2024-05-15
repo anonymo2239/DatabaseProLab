@@ -6,6 +6,7 @@ from django.template import loader
 from .models import Doktorlar
 from .models import Hastalar
 from .models import Yonetici
+from .models import Randevular
 
 
 def home(request):
@@ -70,6 +71,21 @@ def patient_login(request):
             return render(request, "main_app/patients/patients_main_page.html")
         else:
             return HttpResponseRedirect('/hasta/')  # Kök URL'ye yönlendir
+
+
+def yonetici_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('id')
+        password = request.POST.get('sifre')
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM Sifreler WHERE userID = %s AND password = %s", [username, password])
+            user = cursor.fetchone()
+
+        if user is not None:
+            return render(request, "main_app/admin/adminfirst.html")
+        else:
+            return HttpResponseRedirect('/yonetici/')
 
 
 def admin_second_patient(request):
@@ -243,26 +259,53 @@ def admin_second_doctor(request):
 def admin_second_report(request):
     return render(request, 'main_app/admin/adminsecond_report.html')
 
+
 def admin_second_appointment(request):
-    return render(request, 'main_app/admin/adminsecond_appointment.html')
-
-def yonetici_login(request):
     if request.method == 'POST':
-        password = request.POST.get('usersifre')
+        action = request.POST.get('action')
 
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM Yonetici, Sifreler WHERE UserID = YoneticiID AND Password = %s", [password])
-            user = cursor.fetchone()
+        if action == 'update':
+            # Formdan bilgileri al
+            randevuid = request.POST.get('randevuid')
+            hastaid = request.POST.get('hastaid')
+            doktorid = request.POST.get('doktorid')
+            tarih = request.POST.get('tarih')
+            saat = request.POST.get('saat')
 
-        if user:
-            return render(request, "main_app/admin/adminfirst.html")
-        else:
-            messages.error(request, 'Yanlış kullanıcı adı veya şifre.')
-            return HttpResponseRedirect('/yonetici/giris/')
+            with connection.cursor() as cursor:
+                # Randevunun var olup olmadığını kontrol et
+                cursor.execute("SELECT * FROM randevular WHERE id = %s", [randevuid])
+                row = cursor.fetchone()
 
-    return render(request, 'main_app/admin/adminfirst.html')
+                if row is not None:
+                    # Randevuyu güncelle
+                    cursor.execute(
+                        "UPDATE randevular SET hastaid = %s, doktor_id = %s, tarih = %s, saat = %s WHERE id = %s",
+                        [hastaid, doktorid, tarih, saat, randevuid]
+                    )
+                    messages.success(request, 'Randevu başarıyla güncellendi.')
+                else:
+                    messages.error(request, 'Bu ID ile bir randevu bulunamadı.')
 
+        elif action == 'delete':
+            # Formdan bilgileri al
+            randevuid = request.POST.get('randevuid')
 
-# admin hasta düzenleme bölümüne sql tablosunu aktarmak
+            with connection.cursor() as cursor:
+                # Randevunun var olup olmadığını kontrol et
+                cursor.execute("SELECT * FROM randevular WHERE id = %s", [randevuid])
+                row = cursor.fetchone()
 
+                if row is not None:
+                    # Randevuyu sil
+                    cursor.execute("DELETE FROM randevular WHERE id = %s", [randevuid])
+                    messages.success(request, 'Randevu başarıyla silindi.')
+                else:
+                    messages.error(request, 'Bu ID ile bir randevu bulunamadı.')
+
+        return redirect('admin_second_appointment')
+
+    else:
+        randevular = Randevular.objects.all()
+        return render(request, 'main_app/admin/adminsecond_appointment.html', {'randevular': randevular})
 
