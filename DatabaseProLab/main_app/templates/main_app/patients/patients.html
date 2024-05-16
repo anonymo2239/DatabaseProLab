@@ -65,9 +65,25 @@
                 <input type="text" id="id" name="id" required>
             </div>
             <div class="form-group">
-                <label for="sifre">Hasta Şifre</label>
-                <input type="password" id="sifre" name="sifre" required>
+                <label for="sifre">Yönetici Şifre</label>
+                <div style="position: relative;">
+                    <input type="password" id="sifre" name="sifre" style="padding-right: 40px; width: 82%;" required>
+                    <i id="togglePassword" style="position: absolute; right: 10px; top: 5px; cursor: pointer; font-size: 20px;">🔒</i>
+                </div>
             </div>
+            <script>
+                var togglePassword = document.getElementById('togglePassword');
+                var passwordInput = document.getElementById('sifre');
+                togglePassword.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePassword.textContent = '🔓'; // Simgeyi açık kilit ile değiştir
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePassword.textContent = '🔒'; // Simgeyi kapalı kilit ile değiştir
+                    }
+                });
+            </script>
             <button type="submit">Giriş Yap</button>
         </form>
     </div>
