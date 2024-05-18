@@ -20,6 +20,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             width: 300px;
+            max-width: 1000px;
         }
         img {
             max-width: 60%;
@@ -45,11 +46,17 @@
         button:hover {
             background-color: #0056b3;
         }
+        .logo {
+            max-width: 80%;  /* Resmin maksimum genişliğini artırın */
+            height: auto;    /* Yüksekliği otomatik ayarlayın */
+            margin: 20px;    /* Her yne 20px margin ekleyin */
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="logo3.png" alt="KOU Hastanesi Logo">
+        {% load static %}
+        <img src="{% static 'images/logo.png' %}" alt="E-Nabız Logo" class="logo">
         <h1>E-Nabız İnternet Sitesine Hoşgeldiniz</h1>
         <a href="{% url 'patients' %}">
             <button type="button" class="btn btn-primary">Hasta Girişi</button>

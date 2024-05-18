@@ -49,13 +49,17 @@
                 <tbody>
                     {% for hasta in hastalar %}
                     <tr>
-                        <td>{{ hasta.hastaid }}</td>
-                        <td>{{ hasta.ad }}</td>
-                        <td>{{ hasta.soyad }}</td>
-                        <td>{{ hasta.dogumtarihi }}</td>
-                        <td>{{ hasta.cinsiyet }}</td>
-                        <td>{{ hasta.telefonnumarasi }}</td>
-                        <td>{{ hasta.adres }}</td>
+                        <td>{{ hasta.0 }}</td>
+                        <td>{{ hasta.1 }}</td>
+                        <td>{{ hasta.2 }}</td>
+                        <td>{{ hasta.3 }}</td>
+                        <td>{{ hasta.4 }}</td>
+                        <td>{{ hasta.5 }}</td>
+                        <td>{{ hasta.6 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">Hiç hasta bilgisi bulunamadı.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -107,7 +111,32 @@
           </div>
       </div>
   </div>
-  
+  <script>
+    $(document).ready(function() {
+        $('form').on('submit', function(event) {
+            event.preventDefault();
+    
+            var form_data = $(this).serialize();
+    
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: form_data,
+                success: function(response) {
+                    if (response.success) {
+                        alert('İşlem başarılı!');
+                        location.reload();
+                    } else {
+                        alert('İşlem başarısız!');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+        });
+    });
+    </script>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>

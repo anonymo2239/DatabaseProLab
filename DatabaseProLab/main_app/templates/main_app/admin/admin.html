@@ -61,6 +61,8 @@
 <body>
     <div class="login-form">
         <div class="header">
+            {% load static %}
+            <img src="{% static 'images/logo.png' %}" alt="E-Nabız Logo">
             <h2>E-Nabız Yönetici Girişi</h2>
         </div>
         <form action="{% url 'yonetici_login' %}" method="post">

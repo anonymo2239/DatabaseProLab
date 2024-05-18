@@ -52,7 +52,9 @@
 
     <div class="admin-panel">
         <div class="header">
-            <h1>Yönetici Sayfasına Hoşgeldiniz</h1>
+            {% load static %}
+            <img src="{% static 'images/logo.png' %}" alt="E-Nabız Logo" class="logo">
+            <h1>E-Nabız Ynetici Sayfasına Hoşgeldiniz</h1>
         </div>
         <button onclick="window.location.href='{% url 'admin_second_patient' %}'">Hasta Tablosunu Düzenle</button>
         <button onclick="window.location.href='{% url 'admin_second_doctor' %}'">Doktor Tablosunu Düzenle</button>

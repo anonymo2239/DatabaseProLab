@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Randevu Al</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #add8e6;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+        button:hover {
+            background-color: #87ceeb;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // CSRF token'ı jQuery ile AJAX isteklerine ekle
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            // Uzmanlık alanlarını yükle
+            $.get("{% url 'get_uzmanliklar' %}", function(data) {
+                var uzmanlikSelect = $('#uzmanlik');
+                uzmanlikSelect.empty();
+                $.each(data.uzmanliklar, function(index, value) {
+                    uzmanlikSelect.append('<option value="' + value + '">' + value + '</option>');
+                });
+            });
+
+            // Hastaneleri yükle
+            $('#uzmanlik').change(function() {
+                var uzmanlik = $(this).val();
+                $.get("{% url 'get_hastaneler' %}", { uzmanlik: uzmanlik }, function(data) {
+                    var hastaneSelect = $('#hastane');
+                    hastaneSelect.empty();
+                    $.each(data.hastaneler, function(index, value) {
+                        hastaneSelect.append('<option value="' + value + '">' + value + '</option>');
+                    });
+                });
+            });
+
+            // Doktorları yükle
+            $('#hastane').change(function() {
+                var hastane = $(this).val();
+                $.get("{% url 'get_doktorlar' %}", { hastane: hastane }, function(data) {
+                    var doktorSelect = $('#doktor');
+                    doktorSelect.empty();
+                    $.each(data.doktorlar, function(index, value) {
+                        doktorSelect.append('<option value="' + value.id + '">' + value.ad_soyad + '</option>');
+                    });
+                });
+            });
+
+            // Randevu al
+            $('#randevu_form').submit(function(event) {
+                event.preventDefault();
+                var doktor_id = $('#doktor').val();
+                var tarih = $('#tarih').val();
+                var saat = $('#saat').val();
+                $.post("{% url 'randevu_ekle' %}", {
+                    doktor_id: doktor_id,
+                    tarih: tarih,
+                    saat: saat
+                }, function(data) {
+                    if (data.success) {
+                        alert('Randevu başarıyla alındı.');
+                        window.location.href = '/hasta/anasayfa/';
+                    } else {
+                        alert('Randevu alırken bir hata oluştu: ' + data.message);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Randevu Al</h1>
+    <div class="form-container">
+        <form id="randevu_form">
+            {% csrf_token %}
+            <label for="uzmanlik">Uzmanlık Alanı:</label>
+            <select id="uzmanlik" name="uzmanlik"></select>
+
+            <label for="hastane">Hastane:</label>
+            <select id="hastane" name="hastane"></select>
+
+            <label for="doktor">Doktor:</label>
+            <select id="doktor" name="doktor"></select>
+
+            <label for="tarih">Tarih:</label>
+            <input type="date" id="tarih" name="tarih">
+
+            <label for="saat">Saat:</label>
+            <input type="time" id="saat" name="saat">
+
+            <button type="submit">Randevu Al</button>
+        </form>
+    </div>
+</body>
+</html>
