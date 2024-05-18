@@ -183,8 +183,72 @@ def doctor_ekle(request):
     return JsonResponse({'yeni_doktor':yeni_doktor})
 
 def admin_second_report(request):
-    return render(request, 'main_app/admin/adminsecond_report.html')
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        raporid = request.POST.get('raporid')
+        raportarihi = request.POST.get('raportarihi')
+        raporicerigi = request.POST.get('raporicerigi')
+        hastaid = request.POST.get('hastaid')
+        doktorid = request.POST.get('doktorid')
 
+        try:
+            with connection.cursor() as cursor:
+                if action == 'add':
+                    cursor.execute(
+                        "INSERT INTO tibbiraporlar (raporid, raportarihi, raporicerigi, hastaid, doktorid) VALUES (%s, %s, %s, %s, %s)",
+                        [raporid, raportarihi, raporicerigi, hastaid, doktorid]
+                    )
+                    messages.success(request, 'Rapor başarıyla eklendi.')
+                elif action == 'update':
+                    cursor.execute(
+                        "UPDATE tibbiraporlar SET raportarihi = %s, raporicerigi = %s, hastaid = %s, doktorid = %s WHERE raporid = %s",
+                        [raportarihi, raporicerigi, hastaid, doktorid, raporid]
+                    )
+                    messages.success(request, 'Rapor başarıyla güncellendi.')
+                elif action == 'delete':
+                    cursor.execute(
+                        "DELETE FROM tibbiraporlar WHERE raporid = %s",
+                        [raporid]
+                    )
+                    messages.success(request, 'Rapor başarıyla silindi.')
+                else:
+                    messages.error(request, 'Geçersiz işlem.')
+        except Exception as e:
+            messages.error(request, f'Bir hata oluştu: {str(e)}')
+
+        return redirect('admin_second_report')
+    else:
+        raporlar = []
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM tibbiraporlar")
+            raporlar = cursor.fetchall()
+        return render(request, 'main_app/admin/adminsecond_report.html', {'raporlar': raporlar})
+
+def hasta_rapor_goster(request):
+    hasta_id = request.GET.get('hasta_id')  # URL'den rapor_id parametresini al
+    doktor_id = request.GET.get('doktor_id')  # URL'den rapor_id parametresini al
+    raporlar = []
+    if hasta_id and doktor_id:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM tibbiraporlar WHERE hastaid = %s AND doktorid = %s", [hasta_id, doktor_id])
+            raporlar = cursor.fetchall()
+            if not raporlar:
+                messages.error(request, "Rapor bulunamadı.")  # Rapor bulunamadı mesajı
+
+    return render(request, 'main_app/admin/adminsecond_report.html', {'raporlar': raporlar})
+
+def doktor_rapor_goster(request):
+    doctor_id = request.GET.get('doctor_id')  # URL'den rapor_id parametresini al
+    hasta_id = request.GET.get('hasta_id')  # URL'den rapor_id parametresini al
+    raporlar = []
+    if doctor_id and hasta_id:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM tibbiraporlar WHERE doktorid = %s AND hastaid = %s", [doctor_id, hasta_id])
+            raporlar = cursor.fetchall()
+            if not raporlar:
+                messages.error(request, "Rapor bulunamadı.")  # Rapor bulunamadı mesajı
+
+    return render(request, 'main_app/admin/adminsecond_report.html', {'raporlar': raporlar})
 
 def admin_second_appointment(request):
     if request.method == 'POST':

@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapor Tablosu Düzenle</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        table {
+            width: 100%; /* Tablo genişliğini artır */
+        }
+        .form-label {
+            text-align: right; /* Etiketleri sağa yasla */
+            margin-right: 10px; /* Etiket ile input arasında boşluk bırak */
+            flex: 1; /* Etiketlere esneklik ver */
+        }
+        .form-control {
+            width: 50%; /* Input genişliğini azalt */
+            flex: 2; /* Inputlara esneklik ver */
+        }
+        .form-group {
+            display: flex; /* Flexbox kullanarak label ve input'u yan yana getir */
+            align-items: center; /* İçerikleri dikey olarak ortala */
+            margin-bottom: 10px; /* Alt elemanlar arası boşluk */
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rapor ID</th>
+                        <th>Rapor Tarihi</th>
+                        <th>Rapor İçeriği</th>
+                        <th>Hasta ID</th>
+                        <th>Doktor ID</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rapor in raporlar %}
+                    <tr>
+                        <td><a href="{% static 'images/reports/' %}{{ rapor.0 }}.png" target="_blank">{{ rapor.0 }}</a></td>
+                        <td>{{ rapor.1 }}</td>
+                        <td>{{ rapor.2 }}</td>
+                        <td>{{ rapor.3 }}</td>
+                        <td>{{ rapor.4 }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteReport({{ rapor.0 }})">Sil</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Hiç rapor bilgisi bulunamadı.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="raporid" class="form-label">Rapor ID</label>
+                    <input type="text" class="form-control" id="raporid" name="raporid" required>
+                </div>
+                <div class="form-group">
+                    <label for="raportarihi" class="form-label">Rapor Tarihi</label>
+                    <input type="date" class="form-control" id="raportarihi" name="raportarihi" required>
+                </div>
+                <div class="form-group">
+                    <label for="raporicerigi" class="form-label">Rapor İçeriği</label>
+                    <input type="text" class="form-control" id="raporicerigi" name="raporicerigi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hastaid" class="form-label">Hasta ID</label>
+                    <input type="text" class="form-control" id="hastaid" name="hastaid" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktorid" class="form-label">Doktor ID</label>
+                    <input type="text" class="form-control" id="doktorid"class="form-control" id="doktorid" name="doktorid" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-success" name="action" value="add">Ekle</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="update">Güncelle</button>
+                    <button type="button" onclick="window.location.href='/yonetici/giris'">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+function deleteReport(reportId) {
+    if (confirm('Raporu silmek istediğinizden emin misiniz?')) {
+        // AJAX request to delete the report
+        $.ajax({
+            url: '/delete-report/' + reportId,
+            type: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    alert('Rapor başarıyla silindi.');
+                    location.reload(); // Reload the page to update the table
+                } else {
+                    alert('Silme işlemi başarısız.');
+                }
+            },
+            error: function() {
+                alert('Sunucu hatası.');
+            }
+        });
+    }
+}
+</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

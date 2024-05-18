@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.home, name="mainpage"),
@@ -21,6 +23,11 @@ urlpatterns = [
     path("get_hastaneler/", views.get_hastaneler, name="get_hastaneler"),
     path("get_doktorlar/", views.get_doktorlar, name="get_doktorlar"),
     path("randevu_ekle/", views.randevu_ekle, name="randevu_ekle"),
-    path("doctor_ekle/", views.doctor_ekle, name="doctor_ekle")
-]
+    path("doctor_ekle/", views.doctor_ekle, name="doctor_ekle"),
+    path('hasta-rapor-goster/', views.hasta_rapor_goster, name='hasta_rapor_goster'),
+    path('doktor-rapor-goster/', views.doktor_rapor_goster, name='doktor_rapor_goster'),
+] 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

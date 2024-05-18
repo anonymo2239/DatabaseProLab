@@ -1,174 +1,126 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasta Tablosu Düzenle</title>
+    <title>Rapor Tablosu Düzenle</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%; /* Konteyner genişliği */
-            background-color: #87CEEB;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between; /* Elemanları aralarında boşluk bırakarak hizalama */
-            gap: 10px; /* Elemanlar arası boşluk */
-        }
-
-        .table-container {
-            flex: 1; /* Tablo konteynerini genişlet */
-        }
-
         table {
-            width: 100%; /* Tablo genişliği */
-            border-collapse: collapse; /* Kenar çizgilerini birleştir */
-            margin-bottom: 20px;
+            width: 100%; /* Tablo genişliğini artır */
         }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+        .form-label {
+            text-align: right; /* Etiketleri sağa yasla */
+            margin-right: 10px; /* Etiket ile input arasında boşluk bırak */
+            flex: 1; /* Etiketlere esneklik ver */
         }
-
-        th {
-            background-color: #007BFF;
-            color: white;
+        .form-control {
+            width: 50%; /* Input genişliğini azalt */
+            flex: 2; /* Inputlara esneklik ver */
         }
-
-        .form-container {
-            width: 40%; /* Form konteyneri genişliği */
-            background-color: #fff;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .inputs {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-
-        .inputs input {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            font-size: 1em;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        button {
-            padding: 10px;
-            margin-left: 5px;
-            border: none;
-            border-radius: 3px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        button:first-child {
-            background-color: #28a745; /* Yeşil renk */
-            color: white;
-        }
-
-        button:nth-child(2) {
-            background-color: #dc3545; /* Kırmızı renk */
-            color: white;
-        }
-
-        button:nth-child(3) {
-            background-color: #007BFF; /* Mavi renk */
-            color: white;
-        }
-
-        button:last-child {
-            background-color: #6c757d; /* Gri renk */
-            color: white;
-        }
-
-        button:hover {
-            opacity: 0.8;
+        .form-group {
+            display: flex; /* Flexbox kullanarak label ve input'u yan yana getir */
+            align-items: center; /* İçerikleri dikey olarak ortala */
+            margin-bottom: 10px; /* Alt elemanlar arası boşluk */
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="table-container">
-        <table>
-            <tr>
-                <th>Hasta ID</th>
-                <th>Ad</th>
-                <th>Soyad</th>
-                <th>Doğum Tarihi</th>
-                <th>Cinsiyet</th>
-                <th>Telefon Numarası</th>
-                <th>Adres</th>
-            </tr>
-            {% for hasta in hastalar %}
-                <tr>
-                    <td>{{ hasta.hastaid }}</td>
-                    <td>{{ hasta.ad }}</td>
-                    <td>{{ hasta.soyad }}</td>
-                    <td>{{ hasta.dogumtarihi }}</td>
-                    <td>{{ hasta.cinsiyet }}</td>
-                    <td>{{ hasta.telefonnumarasi }}</td>
-                    <td>{{ hasta.adres }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <div class="form-container">
-        <form method="POST">
-            {% csrf_token %}
-            <div class="inputs">
-                <input type="text" name="hastaid" placeholder="ID">
-                <input type="text" name="hasta_ad" placeholder="Ad">
-                <input type="text" name="hasta_soyad" placeholder="Soyad">
-                <input type="text" name="hasta_dogumTarihi" placeholder="Doğum Tarihi (XX.XX.XXXX)">
-                <input type="text" name="hasta_cinsiyet" placeholder="Cinsiyet">
-                <input type="text" name="hasta_telefonNo" placeholder="Telefon Numarası (+90___ ___ __ __)">
-                <input type="text" name="hasta_adres" placeholder="Adres">
-            </div>
-            <div class="buttons">
-                <button type="submit" name="action" value="execute">Sorguyu Çalıştır</button>
-                <button type="button" onclick="window.location.href='/yonetici/giris/anasayfa'">Geri</button>
-            </div>
-        </form>
-        <br>
-        <textarea id="sqlQuery" rows="6" cols="97" placeholder="SQL sorgularınızı buraya yazınız"></textarea>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rapor ID</th>
+                        <th>Rapor Tarihi</th>
+                        <th>Rapor İçeriği</th>
+                        <th>Hasta ID</th>
+                        <th>Doktor ID</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rapor in raporlar %}
+                    <tr>
+                        <td><a href="{% static 'images/reports/' %}{{ rapor.0 }}.png" target="_blank">{{ rapor.0 }}</a></td>
+                        <td>{{ rapor.1 }}</td>
+                        <td>{{ rapor.2 }}</td>
+                        <td>{{ rapor.3 }}</td>
+                        <td>{{ rapor.4 }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteReport({{ rapor.0 }})">Sil</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Hiç rapor bilgisi bulunamadı.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <form method="GET" action="{% url 'rapor_goster' %}">
+                <input type="text" name="rapor_id" placeholder="Rapor ID girin" required>
+                <button type="submit">Raporları Getir</button>
+            </form>
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="raporid" class="form-label">Rapor ID</label>
+                    <input type="text" class="form-control" id="raporid" name="raporid" required>
+                </div>
+                <div class="form-group">
+                    <label for="raportarihi" class="form-label">Rapor Tarihi</label>
+                    <input type="date" class="form-control" id="raportarihi" name="raportarihi" required>
+                </div>
+                <div class="form-group">
+                    <label for="raporicerigi" class="form-label">Rapor İçeriği</label>
+                    <input type="text" class="form-control" id="raporicerigi" name="raporicerigi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hastaid" class="form-label">Hasta ID</label>
+                    <input type="text" class="form-control" id="hastaid" name="hastaid" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktorid" class="form-label">Doktor ID</label>
+                    <input type="text" class="form-control" id="doktorid"class="form-control" id="doktorid" name="doktorid" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-success" name="action" value="add">Ekle</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="update">Güncelle</button>
+                    <button type="button" onclick="window.location.href='/yonetici/giris'">Geri</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 <script>
-    document.getElementById('runSqlButton').addEventListener('click', function() {
-        var sqlQuery = document.getElementById('sqlQuery').value;
-        fetch('/run-sql/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': '{{ csrf_token }}'
+function deleteReport(reportId) {
+    if (confirm('Raporu silmek istediğinizden emin misiniz?')) {
+        // AJAX request to delete the report
+        $.ajax({
+            url: '/delete-report/' + reportId,
+            type: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    alert('Rapor başarıyla silindi.');
+                    location.reload(); // Reload the page to update the table
+                } else {
+                    alert('Silme işlemi başarısız.');
+                }
             },
-            body: 'query=' + encodeURIComponent(sqlQuery)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response data, e.g., update the table with new data
+            error: function() {
+                alert('Sunucu hatası.');
+            }
         });
-    });
+    }
+}
 </script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
