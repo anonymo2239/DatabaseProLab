@@ -447,6 +447,7 @@ def get_patient_reports(request):
     results = [{'RaporID': rapor[0], 'RaporTarihi': rapor[1], 'RaporIcerigi': rapor[2], 'HastaID': rapor[3], 'DoktorID': rapor[4]} for rapor in raporlar]
     return JsonResponse({'raporlar': results, 'message': 'Raporlar başarıyla bulundu.'})
 
+
 def add_or_update_report(request):
     if request.method == 'POST':
         rapor_tarihi = request.POST.get('raporTarihi')
@@ -461,11 +462,21 @@ def add_or_update_report(request):
                 rapor.guncelle()
             else:
                 rapor.kaydet()
+
+            # Bildirim ekleme
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO Bildirimler (HastaID, DoktorID, Icerik) VALUES (%s, %s, %s)",
+                    [hasta_id, doktor_id, f"Yeni bir tıbbi rapor eklendi: {rapor_icerigi[:50]}..."]
+                )
+            connection.commit()
+
             return JsonResponse({'success': True, 'message': 'Rapor başarıyla kaydedildi.'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Bir hata oluştu: {str(e)}'})
 
     return JsonResponse({'success': False, 'message': 'Geçersiz istek.'})
+
 
 def delete_report(request):
     if request.method == 'POST':
@@ -513,3 +524,31 @@ def register_patient(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Bir hata oluştu: {str(e)}'})
     return JsonResponse({'success': False, 'message': 'Geçersiz istek.'})
+
+
+def get_notifications(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'success': False, 'message': 'Kullanıcı oturumu bulunamadı.'})
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Bildirimler WHERE HastaID = %s AND OkunduMu = FALSE", [user_id])
+        bildirimler = cursor.fetchall()
+
+    results = [{'BildirimID': b[0], 'HastaID': b[1], 'DoktorID': b[2], 'Icerik': b[3], 'Tarih': b[5]} for b in
+               bildirimler]
+    return JsonResponse({'success': True, 'bildirimler': results})
+
+
+def mark_notifications_as_read(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({'success': False, 'message': 'Kullanıcı oturumu bulunamadı.'})
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE Bildirimler SET OkunduMu = TRUE WHERE HastaID = %s", [user_id])
+        connection.commit()
+        return JsonResponse({'success': True, 'message': 'Bildirimler okundu olarak işaretlendi.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Bir hata oluştu: {str(e)}'})

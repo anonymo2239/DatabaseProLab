@@ -47,7 +47,71 @@
         .appointment-row {
             background-color: #add8e6;
         }
+        .notifications {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .notifications h2 {
+            color: darkred;
+        }
+        .notifications ul {
+            list-style: none;
+            padding: 0;
+        }
+        .notifications li {
+            background-color: #add8e6;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .notifications button {
+            background-color: #add8e6;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function fetchNotifications() {
+            $.ajax({
+                url: '/get_notifications/',
+                method: 'GET',
+                success: function(data) {
+                    if (data.success) {
+                        let notifications = data.bildirimler;
+                        let notificationList = $('#notificationList');
+                        notificationList.empty();
+                        notifications.forEach(notification => {
+                            notificationList.append(`<li>${notification.Icerik} - ${notification.Tarih}</li>`);
+                        });
+                    }
+                }
+            });
+        }
+
+        function markNotificationsAsRead() {
+            $.ajax({
+                url: '/mark_notifications_as_read/',
+                method: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    if (data.success) {
+                        fetchNotifications();
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            fetchNotifications();
+        });
+    </script>
 </head>
 <body>
     <h1>KOÜ Hastanesi Hasta Anasayfa</h1>
@@ -56,6 +120,13 @@
         <button onclick="window.location.href='{% url 'patient_report' %}'">Tıbbi Raporlarım</button>
         <button onclick="window.location.href='/hasta'">Çıkış</button>
     </div>
+
+    <div class="notifications">
+        <h2>Bildirimler</h2>
+        <ul id="notificationList"></ul>
+        <button onclick="markNotificationsAsRead()">Bildirimleri Okundu Olarak İşaretle</button>
+    </div>
+
     <table>
         <thead>
             <tr>

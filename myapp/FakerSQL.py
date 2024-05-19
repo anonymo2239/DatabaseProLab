@@ -317,6 +317,20 @@ try:
         )
         """)
 
+        imlec.execute("""
+        CREATE TABLE Bildirimler (
+                BildirimID INT AUTO_INCREMENT PRIMARY KEY,
+                HastaID INT,
+                DoktorID INT,
+                Icerik TEXT,
+                OkunduMu BOOLEAN DEFAULT FALSE,
+                Tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (HastaID) REFERENCES Hastalar(HastaID),
+                FOREIGN KEY (DoktorID) REFERENCES Doktorlar(DoktorID)
+                    )
+
+                """)
+
         # Yönetici tablosuna bir giriş ekle
         imlec.execute("INSERT INTO Yonetici (YoneticiID) VALUES (1)")
         imlec.execute("""
