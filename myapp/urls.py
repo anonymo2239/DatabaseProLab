@@ -41,5 +41,6 @@ urlpatterns = [
     path("delete_appointment/", views.delete_appointment, name="delete_appointment"),
     path('doktor/anasayfa/rapor-ekle/', views.add_or_update_report_page, name='add_or_update_report_page'),
     path("get_notifications/", views.get_notifications, name="get_notifications"),  # Yeni eklendi
+    path('reports/<int:report_id>/', views.show_report, name='show_report'),
     path("mark_notifications_as_read/", views.mark_notifications_as_read, name="mark_notifications_as_read"),  # Yeni eklendi
 ]

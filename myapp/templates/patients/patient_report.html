@@ -61,6 +61,7 @@
                 <th>Rapor Tarihi</th>
                 <th>Rapor İçeriği</th>
                 <th>Doktor ID</th>
+                <th>Link</th>
             </tr>
         </thead>
         <tbody>
@@ -70,6 +71,7 @@
                 <td>{{ rapor.1 }}</td>
                 <td>{{ rapor.2 }}</td>
                 <td>{{ rapor.4 }}</td>
+                <td><a href="{% url 'show_report' report_id=rapor.0 %}" target="_blank">Raporu Görüntüle</a></td>
             </tr>
             {% endfor %}
         </tbody>

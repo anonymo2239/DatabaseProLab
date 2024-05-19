@@ -552,3 +552,8 @@ def mark_notifications_as_read(request):
         return JsonResponse({'success': True, 'message': 'Bildirimler okundu olarak işaretlendi.'})
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Bir hata oluştu: {str(e)}'})
+
+
+def show_report(request, report_id):
+    template_name = f'reports_html/report_{report_id}.html'
+    return render(request, template_name)
