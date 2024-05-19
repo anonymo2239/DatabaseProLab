@@ -2,65 +2,117 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KOÜ Hastanesi Hasta Girişi</title>
+    <title>MHRS Hasta Girişi</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #007BFF, #00C6FF);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
         }
-        .login-form {
-            background-color: #fff;
-            padding: 20px;
+        .container {
+            background-color: white;
+            padding: 40px 60px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .mhrs-header {
+            background-color: #ff0000;
+            color: white;
+            padding: 15px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            width: 300px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mhrs-header .emoji {
+            font-size: 30px;
+            margin: 0 10px;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 0 0 20px;
         }
         .form-group {
+            text-align: left;
             margin-bottom: 15px;
         }
         label {
             display: block;
             margin-bottom: 5px;
+            color: #333;
         }
         input[type="text"], input[type="password"] {
-            width: 93%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        button {
             width: 100%;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
             background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 3px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-3px);
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        a {
+            text-decoration: none;
+            display: block;
+        }
+        .nav-buttons {
+            margin-top: 20px;
+        }
+        .nav-buttons button {
+            background-color: #28a745;
+        }
+        .nav-buttons button:hover {
+            background-color: #218838;
+        }
+        footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="login-form">
-        <div class="header">
-            <img src="logo3.png" alt="Logo" id="alp" style="max-width: 100px; margin-bottom: 10px;">
-            <h2>Cango Hastanesi Hasta Girişi</h2>
+    <div class="container">
+        <div class="mhrs-header">
+            <span class="emoji">🚑</span>
+            MHRS
+            <span class="emoji">🩺</span>
         </div>
-        <!-- Form action güncellendi -->
+        <h1>MHRS Hasta Girişi</h1>
         <form action="{% url 'patient_login' %}" method="post">
-            {% csrf_token %} <!-- CSRF token eklendi -->
+            {% csrf_token %}
             <div class="form-group">
                 <label for="id">Hasta ID</label>
                 <input type="text" id="id" name="id" required>
@@ -71,6 +123,12 @@
             </div>
             <button type="submit">Giriş Yap</button>
         </form>
+        <div class="nav-buttons">
+            <a href="{% url 'patient_register' %}">
+                <button type="button">Yeni Kayıt</button>
+            </a>
+        </div>
+        <footer>© 2024 MHRS. Tüm hakları saklıdır.</footer>
     </div>
 </body>
 </html>

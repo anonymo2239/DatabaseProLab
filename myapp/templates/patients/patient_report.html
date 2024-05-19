@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>KOÜ Hastanesi Hasta Anasayfa</title>
+    <title>KOÜ Hastanesi Hasta Raporları</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +27,6 @@
             cursor: pointer;
             border-radius: 5px;
         }
-
         .nav-buttons button:hover {
             background-color: #87ceeb;
         }
@@ -44,42 +43,33 @@
         th {
             background-color: #add8e6;
         }
-        .appointment-row {
+        .report-row {
             background-color: #add8e6;
         }
     </style>
 </head>
 <body>
-    <h1>KOÜ Hastanesi Hasta Anasayfa</h1>
+    <h1>KOÜ Hastanesi Hasta Raporları</h1>
     <div class="nav-buttons">
         <button onclick="window.location.href='/hasta/anasayfa/randevual'">Randevu Al</button>
-        <button onclick="window.location.href='{% url 'patient_report' %}'">Tıbbi Raporlarım</button>
         <button onclick="window.location.href='/hasta'">Çıkış</button>
     </div>
     <table>
         <thead>
             <tr>
-                <th>Randevu No</th>
+                <th>Rapor ID</th>
+                <th>Rapor Tarihi</th>
+                <th>Rapor İçeriği</th>
                 <th>Doktor ID</th>
-                <th>Tarih</th>
-                <th>Saat</th>
-                <th>İşlem</th>
             </tr>
         </thead>
         <tbody>
-            {% for randevu in randevular %}
-            <tr class="appointment-row">
-                <td>{{ randevu.0 }}</td>
-                <td>{{ randevu.1 }}</td>
-                <td>{{ randevu.2 }}</td>
-                <td>{{ randevu.3 }}</td>
-                <td>
-                    <form method="POST" action="{% url 'delete_appointment' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="randevu_id" value="{{ randevu.0 }}">
-                        <button type="submit">Sil</button>
-                    </form>
-                </td>
+            {% for rapor in raporlar %}
+            <tr class="report-row">
+                <td>{{ rapor.0 }}</td>
+                <td>{{ rapor.1 }}</td>
+                <td>{{ rapor.2 }}</td>
+                <td>{{ rapor.4 }}</td>
             </tr>
             {% endfor %}
         </tbody>

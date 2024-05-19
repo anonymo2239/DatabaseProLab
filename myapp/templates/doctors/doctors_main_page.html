@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Nabız Doktor Anasayfa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .nav-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons button {
+            background-color: #add8e6;
+            border: 1px solid #000;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-buttons button:hover {
+            background-color: #87ceeb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #add8e6;
+        }
+        .appointment-row {
+            background-color: #add8e6;
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function loadAppointments() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "get_doctor_appointments" %}',
+                    success: function(response) {
+                        console.log(response); // Hata ayıklama için ekleyin
+                        var tbody = $('#appointmentsTableBody');
+                        tbody.empty();
+                        if (response.randevular.length > 0) {
+                            $.each(response.randevular, function(index, randevu) {
+                                var row = '<tr class="appointment-row">' +
+                                    '<td>' + randevu.RandevuID + '</td>' +
+                                    '<td>' + randevu.DoktorID + '</td>' +
+                                    '<td>' + randevu.HastaID + '</td>' +
+                                    '<td>' + randevu.HastaAdSoyad + '</td>' +
+                                    '<td>' + randevu.Tarih + '</td>' +
+                                    '<td>' + randevu.Saat + '</td>' +
+                                    '</tr>';
+                                tbody.append(row);
+                            });
+                        } else {
+                            tbody.append('<tr><td colspan="6">' + response.message + '</td></tr>');
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            }
+            loadAppointments();
+        });
+    </script>
+</head>
+<body>
+    <h1>E-Nabız Doktor Anasayfa</h1>
+    <div class="nav-buttons">
+        <button onclick="window.location.href='/doktor/anasayfa/hastalarim'">Hastalarım</button>
+        <button onclick="window.location.href='{% url 'add_or_update_report_page' %}'">Tıbbi Raporları Düzenle</button>
+        <button onclick="window.location.href='/doktor'">Çıkış</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Randevu No</th>
+                <th>Doktor ID</th>
+                <th>Hasta ID</th>
+                <th>Hasta Adı</th>
+                <th>Tarih</th>
+                <th>Saat</th>
+            </tr>
+        </thead>
+        <tbody id="appointmentsTableBody">
+            <!-- Randevular burada gösterilecek -->
+        </tbody>
+    </table>
+</body>
+</html>

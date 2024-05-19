@@ -2,11 +2,12 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Cango Hastanesi</title>
+    <title>MHRS Sistemine Hoşgeldiniz</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #007BFF, #00C6FF);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,51 +16,92 @@
         }
         .container {
             background-color: white;
-            padding: 70px;
+            padding: 40px 60px;
             text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 1s ease-in-out;
         }
-        img {
-            max-width: 60%;
-            height: auto;
-            margin-bottom: 1px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .mhrs-header {
+            background-color: #ff0000;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mhrs-header .emoji {
+            font-size: 30px;
+            margin: 0 10px;
         }
         h1 {
             color: #333;
-            margin-top: 1px;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin: 0 0 20px;
+        }
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
         }
         button {
             background-color: #007BFF;
             color: white;
             border: none;
-            padding: 15px 30px;
-            margin: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
             border-radius: 5px;
             cursor: pointer;
             width: 100%;
-            box-sizing: border-box;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+        a {
+            text-decoration: none;
+            display: block;
+        }
+        footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="logo3.png" alt="Cang Hastanesi Logo">
-        <h1>Cango Hastanesi Web Sitesine Hoşgeldiniz</h1>
+        <div class="mhrs-header">
+            <span class="emoji">🚑</span>
+            MHRS
+            <span class="emoji">🩺</span>
+        </div>
+        <h1>MHRS Sistemine Hoşgeldiniz</h1>
+        <p>Randevu almak ve diğer işlemler için lütfen giriş yapınız.</p>
         <a href="{% url 'patients' %}">
-            <button type="button" class="btn btn-primary">Hasta Girişi</button>
+            <button type="button">Hasta Girişi</button>
         </a>
         <a href="{% url 'doctors' %}">
-            <button type="button" class="btn btn-primary">Doktor Girişi</button>
+            <button type="button">Doktor Girişi</button>
         </a>
         <a href="{% url 'admin' %}">
-            <button type="button" class="btn btn-primary">Yönetici Girişi</button>
+            <button type="button">Yönetici Girişi</button>
         </a>
+        <footer>© 2024 MHRS. Tüm hakları saklıdır.</footer>
     </div>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönetici Sayfası</title>
+    <title>E-Nabız Yönetici Sayfası</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,14 +20,14 @@
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             text-align: center;
-            width: 80%; /* Sayfanın yüzde 80'ini kaplar */
-            max-width: 800px; /* Maksimum genişlik sınırlaması */
+            width: 80%;
+            max-width: 800px;
         }
         .header {
             margin-bottom: 30px;
         }
         h1 {
-            font-size: 2em; /* Başlık boyutu */
+            font-size: 2em;
         }
         button {
             padding: 15px 30px;
@@ -36,7 +36,7 @@
             border-radius: 5px;
             background-color: #007bff;
             color: white;
-            font-size: 1.2em; /* Düğme yazı boyutu */
+            font-size: 1.2em;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -49,16 +49,19 @@
     </style>
 </head>
 <body>
+
     <div class="admin-panel">
         <div class="header">
-            <img src="logo2.png" alt="Logo" style="height: 200px;">
-            <h1>Yönetici Sayfasına Hoşgeldiniz</h1>
+            {% load static %}
+            <img src="{% static 'images/logo.png' %}" alt="E-Nabız Logo" class="logo">
+            <h1>E-Nabız Ynetici Sayfasına Hoşgeldiniz</h1>
         </div>
-        <button onclick="window.location.href='/edit-patient-table'">Hasta Tablosunu Düzenle</button>
-        <button onclick="window.location.href='/edit-doctor-table'">Doktor Tablosunu Düzenle</button>
-        <button onclick="window.location.href='/add-medical-report'">Tıbbi Rapor Ekle</button>
+        <button onclick="window.location.href='{% url 'admin_second_patient' %}'">Hasta Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_doctor' %}'">Doktor Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_appointment' %}'">Randevu Tablosunu Düzenle</button>
+        <button onclick="window.location.href='{% url 'admin_second_report' %}'">Tıbbi Rapor Düzenle</button>
         <div class="footer">
-            <button onclick="window.location.href='/logout'">Çıkış</button>
+            <button onclick="window.location.href='{% url 'admin' %}'">Çıkış</button>
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cango Hastanesi Yönetici Girişi</title>
+    <title>E-Nabız Hastanesi Yönetici Girişi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,18 +61,34 @@
 <body>
     <div class="login-form">
         <div class="header">
-            <img src="templates/myapp/admin/logo3.png" alt="Logo" id="alp" style="max-width: 100px; margin-bottom: 10px;">
-            <h2>Cango Hastanesi Yönetici Girişi</h2>
+            <h2>E-Nabız Yönetici Girişi</h2>
         </div>
-        <form action="templates/myapp/admin/logo3.png" method="post">
+        <form action="{% url 'yonetici_login' %}" method="post">
+            {% csrf_token %}
             <div class="form-group">
                 <label for="id">Yönetici ID</label>
                 <input type="text" id="id" name="id" required>
             </div>
             <div class="form-group">
                 <label for="sifre">Yönetici Şifre</label>
-                <input type="password" id="sifre" name="sifre" required>
+                <div style="position: relative;">
+                    <input type="password" id="sifre" name="sifre" style="padding-right: 40px; width: 82%;" required>
+                    <i id="togglePassword" style="position: absolute; right: 10px; top: 5px; cursor: pointer; font-size: 20px;">🔒</i>
+                </div>
             </div>
+            <script>
+                var togglePassword = document.getElementById('togglePassword');
+                var passwordInput = document.getElementById('sifre');
+                togglePassword.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePassword.textContent = '🔓'; // Simgeyi açık kilit ile değiştir
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePassword.textContent = '🔒'; // Simgeyi kapalı kilit ile değiştir
+                    }
+                });
+            </script>
             <button type="submit">Giriş Yap</button>
         </form>
     </div>

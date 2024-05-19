@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yeni Hasta Kaydı</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #007BFF, #00C6FF);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px 60px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"], input[type="password"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+        .back-link {
+            text-decoration: none;
+            display: block;
+            margin-top: 20px;
+            color: #007BFF;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').on('submit', function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "register_patient" %}',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = "{% url 'patient_register' %}";
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Bir hata oluştu: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Yeni Hasta Kaydı</h1>
+        <form id="registerForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="ad">Ad</label>
+                <input type="text" id="ad" name="ad" required>
+            </div>
+            <div class="form-group">
+                <label for="soyad">Soyad</label>
+                <input type="text" id="soyad" name="soyad" required>
+            </div>
+            <div class="form-group">
+                <label for="dogum_tarihi">Doğum Tarihi</label>
+                <input type="date" id="dogum_tarihi" name="dogum_tarihi" required>
+            </div>
+            <div class="form-group">
+                <label for="cinsiyet">Cinsiyet</label>
+                <select id="cinsiyet" name="cinsiyet" required>
+                    <option value="Erkek">Erkek</option>
+                    <option value="Kadın">Kadın</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="telefon">Telefon Numarası</label>
+                <input type="text" id="telefon" name="telefon" required>
+            </div>
+            <div class="form-group">
+                <label for="adres">Adres</label>
+                <textarea id="adres" name="adres" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="sifre">Şifre (6 haneli)</label>
+                <input type="password" id="sifre" name="sifre"  required>
+            </div>
+            <button type="submit">Kayıt Ol</button>
+        </form>
+        <a href="{% url 'mainpage' %}" class="back-link">Geri Dön</a>
+        <footer>© 2024 MHRS. Tüm hakları saklıdır.</footer>
+    </div>
+</body>
+</html>

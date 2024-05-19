@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Doktor Hastaları ve Raporları</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .nav-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons button {
+            background-color: #add8e6;
+            border: 1px solid #000;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-buttons button:hover {
+            background-color: #87ceeb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #add8e6;
+        }
+        .appointment-row, .report-row {
+            background-color: #add8e6;
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function loadPatients() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "get_doctor_patients" %}',
+                    success: function(response) {
+                        var tbody = $('#patientsTableBody');
+                        tbody.empty();
+                        if (response.hastalar.length > 0) {
+                            $.each(response.hastalar, function(index, hasta) {
+                                var row = '<tr class="appointment-row">' +
+                                    '<td>' + hasta.HastaID + '</td>' +
+                                    '<td>' + hasta.Ad + '</td>' +
+                                    '<td>' + hasta.Soyad + '</td>' +
+                                    '<td>' + hasta.DogumTarihi + '</td>' +
+                                    '<td>' + hasta.Cinsiyet + '</td>' +
+                                    '<td>' + hasta.TelefonNumarasi + '</td>' +
+                                    '<td>' + hasta.Adres + '</td>' +
+                                    '</tr>';
+                                tbody.append(row);
+                            });
+                        } else {
+                            tbody.append('<tr><td colspan="7">' + response.message + '</td></tr>');
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            }
+
+            function loadReports() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "get_patient_reports" %}',
+                    success: function(response) {
+                        var tbody = $('#reportsTableBody');
+                        tbody.empty();
+                        if (response.raporlar.length > 0) {
+                            $.each(response.raporlar, function(index, rapor) {
+                                var row = '<tr class="report-row">' +
+                                    '<td>' + rapor.RaporID + '</td>' +
+                                    '<td>' + rapor.RaporTarihi + '</td>' +
+                                    '<td>' + rapor.RaporIcerigi + '</td>' +
+                                    '<td>' + rapor.HastaID + '</td>' +
+                                    '<td>' + rapor.DoktorID + '</td>' +
+                                    '</tr>';
+                                tbody.append(row);
+                            });
+                        } else {
+                            tbody.append('<tr><td colspan="5">' + response.message + '</td></tr>');
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            }
+
+            loadPatients();
+            loadReports();
+        });
+    </script>
+</head>
+<body>
+    <h1>Doktor Hastaları ve Raporları</h1>
+    <div class="nav-buttons">
+        <button onclick="window.location.href='/doktor/anasayfa'">Ana Sayfa</button>
+        <button onclick="window.location.href='/doktor'">Çıkış</button>
+    </div>
+    <h2>Hastalar</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Hasta ID</th>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Doğum Tarihi</th>
+                <th>Cinsiyet</th>
+                <th>Telefon Numarası</th>
+                <th>Adres</th>
+            </tr>
+        </thead>
+        <tbody id="patientsTableBody">
+            <!-- Hastalar burada gösterilecek -->
+        </tbody>
+    </table>
+    <h2>Raporlar</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rapor ID</th>
+                <th>Rapor Tarihi</th>
+                <th>Rapor İçeriği</th>
+                <th>Hasta ID</th>
+                <th>Doktor ID</th>
+            </tr>
+        </thead>
+        <tbody id="reportsTableBody">
+            <!-- Raporlar burada gösterilecek -->
+        </tbody>
+    </table>
+</body>
+</html>

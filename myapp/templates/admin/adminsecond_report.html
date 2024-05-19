@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasta Tablosu Düzenle</title>
+    <title>Raporlar Düzenle</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,21 +14,32 @@
         }
 
         .container {
-            width: 100%; /* Konteyner genişliği */
+            width: 100%;
             background-color: #87CEEB;
             padding: 20px;
             display: flex;
-            justify-content: space-between; /* Elemanları aralarında boşluk bırakarak hizalama */
-            gap: 10px; /* Elemanlar arası boşluk */
+            gap: 20px;
         }
 
         .table-container {
-            flex: 1; /* Tablo konteynerini genişlet */
+            width: 50%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .form-container {
+            width: 50%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         table {
-            width: 100%; /* Tablo genişliği */
-            border-collapse: collapse; /* Kenar çizgilerini birleştir */
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 20px;
         }
 
@@ -43,20 +54,13 @@
             color: white;
         }
 
-        .form-container {
-            width: 40%; /* Form konteyneri genişliği */
-            background-color: #fff;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .inputs {
             display: flex;
             flex-wrap: wrap;
             margin-bottom: 10px;
         }
 
-        .inputs input {
+        .inputs input, .inputs textarea {
             padding: 10px;
             margin: 5px;
             border: 1px solid #ccc;
@@ -82,93 +86,150 @@
         }
 
         button:first-child {
-            background-color: #28a745; /* Yeşil renk */
+            background-color: #28a745;
             color: white;
         }
 
         button:nth-child(2) {
-            background-color: #dc3545; /* Kırmızı renk */
+            background-color: #dc3545;
             color: white;
         }
 
         button:nth-child(3) {
-            background-color: #007BFF; /* Mavi renk */
+            background-color: #007BFF;
             color: white;
         }
 
         button:last-child {
-            background-color: #6c757d; /* Gri renk */
+            background-color: #6c757d;
             color: white;
         }
 
         button:hover {
             opacity: 0.8;
         }
+
+        .delete-button {
+            background-color: #d9534f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .delete-button:hover {
+            background-color: #c9302c;
+        }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Rapor arama
+            $('#search-form').submit(function(event) {
+                event.preventDefault();
+                var searchTerm = $('#search').val();
+                $.get("{% url 'search_reports' %}", { term: searchTerm }, function(data) {
+                    var tableBody = $('#reports-table');
+                    tableBody.empty();
+                    if (data.raporlar.length > 0) {
+                        $.each(data.raporlar, function(index, rapor) {
+                            var row = '<tr>' +
+                                '<td>' + rapor[0] + '</td>' +
+                                '<td>' + rapor[1] + '</td>' +
+                                '<td>' + rapor[2] + '</td>' +
+                                '<td>' + rapor[3] + '</td>' +
+                                '<td>' + rapor[4] + '</td>' +
+                                '<td>' + rapor[5] + '</td>' +
+                                '<td><button class="delete-button" data-id="' + rapor[0] + '">Sil</button></td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                    } else {
+                        tableBody.append('<tr><td colspan="7">Sonuç bulunamadı</td></tr>');
+                    }
+                });
+            });
+
+            // Rapor silme
+            $(document).on('click', '.delete-button', function() {
+                var raporID = $(this).data('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "delete_report" %}',
+                    data: {
+                        'raporID': raporID,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload(); // Sayfayı yeniden yükle
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="container">
     <div class="table-container">
+        <h2>Raporlar</h2>
         <table>
-            <tr>
-                <th>Hasta ID</th>
-                <th>Ad</th>
-                <th>Soyad</th>
-                <th>Doğum Tarihi</th>
-                <th>Cinsiyet</th>
-                <th>Telefon Numarası</th>
-                <th>Adres</th>
-            </tr>
-            {% for hasta in hastalar %}
+            <thead>
                 <tr>
-                    <td>{{ hasta.hastaid }}</td>
-                    <td>{{ hasta.ad }}</td>
-                    <td>{{ hasta.soyad }}</td>
-                    <td>{{ hasta.dogumtarihi }}</td>
-                    <td>{{ hasta.cinsiyet }}</td>
-                    <td>{{ hasta.telefonnumarasi }}</td>
-                    <td>{{ hasta.adres }}</td>
+                    <th>Rapor ID</th>
+                    <th>Rapor Tarihi</th>
+                    <th>Rapor İçeriği</th>
+                    <th>Hasta ID</th>
+                    <th>Doktor ID</th>
+                    <th>Yönetici ID</th>
+                    <th>Sil</th>
                 </tr>
-            {% endfor %}
+            </thead>
+            <tbody id="reports-table">
+                {% for rapor in raporlar %}
+                    <tr>
+                        <td>{{ rapor.0 }}</td>
+                        <td>{{ rapor.1 }}</td>
+                        <td>{{ rapor.2 }}</td>
+                        <td>{{ rapor.3 }}</td>
+                        <td>{{ rapor.4 }}</td>
+                        <td>{{ rapor.5 }}</td>
+                        <td><button class="delete-button" data-id="{{ rapor.0 }}">Sil</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
     <div class="form-container">
-        <form method="POST">
+        <h2>Rapor Arama</h2>
+        <form id="search-form">
+            <input type="text" id="search" placeholder="Arama: Rapor ID, Rapor Tarihi, Rapor İçeriği, Hasta ID, Doktor ID, Yönetici ID">
+            <button type="submit">Ara</button>
+        </form>
+        <h2>Rapor Düzenleme</h2>
+        <form method="POST" action="{% url 'admin_second_report_post' %}">
             {% csrf_token %}
             <div class="inputs">
-                <input type="text" name="hastaid" placeholder="ID">
-                <input type="text" name="hasta_ad" placeholder="Ad">
-                <input type="text" name="hasta_soyad" placeholder="Soyad">
-                <input type="text" name="hasta_dogumTarihi" placeholder="Doğum Tarihi (XX.XX.XXXX)">
-                <input type="text" name="hasta_cinsiyet" placeholder="Cinsiyet">
-                <input type="text" name="hasta_telefonNo" placeholder="Telefon Numarası (+90___ ___ __ __)">
-                <input type="text" name="hasta_adres" placeholder="Adres">
+                <input type="text" name="raporid" placeholder="Rapor ID">
+                <input type="text" name="rapor_tarihi" placeholder="Rapor Tarihi">
+                <textarea name="rapor_icerigi" placeholder="Rapor İçeriği"></textarea>
+                <input type="text" name="hastaid" placeholder="Hasta ID">
+                <input type="text" name="doktorid" placeholder="Doktor ID">
+                <input type="text" name="yoneticiid" placeholder="Yönetici ID">
             </div>
             <div class="buttons">
-                <button type="submit" name="action" value="execute">Sorguyu Çalıştır</button>
-                <button type="button" onclick="window.location.href='/yonetici/giris/anasayfa'">Geri</button>
+                <button type="submit" name="action" value="update">Güncelle</button>
+                <button type="submit" name="action" value="delete">Sil</button>
             </div>
         </form>
-        <br>
-        <textarea id="sqlQuery" rows="6" cols="97" placeholder="SQL sorgularınızı buraya yazınız"></textarea>
     </div>
 </div>
-<script>
-    document.getElementById('runSqlButton').addEventListener('click', function() {
-        var sqlQuery = document.getElementById('sqlQuery').value;
-        fetch('/run-sql/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: 'query=' + encodeURIComponent(sqlQuery)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response data, e.g., update the table with new data
-        });
-    });
-</script>
 </body>
 </html>
