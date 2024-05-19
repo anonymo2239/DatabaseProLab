@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>KOÜ Hastanesi Hasta Raporları</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .nav-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons button {
+            background-color: #add8e6;
+            border: 1px solid #000;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-buttons button:hover {
+            background-color: #87ceeb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #add8e6;
+        }
+        .report-row {
+            background-color: #add8e6;
+        }
+    </style>
+</head>
+<body>
+    <h1>KOÜ Hastanesi Hasta Raporları</h1>
+    <div class="nav-buttons">
+        <button onclick="window.location.href='/hasta/anasayfa/randevual'">Randevu Al</button>
+        <button onclick="window.location.href='/hasta'">Çıkış</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Rapor ID</th>
+                <th>Rapor Tarihi</th>
+                <th>Rapor İçeriği</th>
+                <th>Doktor ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rapor in raporlar %}
+            <tr class="report-row">
+                <td>{{ rapor.0 }}</td>
+                <td>{{ rapor.1 }}</td>
+                <td>{{ rapor.2 }}</td>
+                <td>{{ rapor.4 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

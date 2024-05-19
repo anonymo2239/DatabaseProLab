@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Nabız Hastanesi Doktor Girişi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .login-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 93%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form">
+        <div class="header">
+            {% load static %}
+            <img src="{% static 'images/logo.png' %}" alt="E-Nabız Logo">
+            <h2>E-Nabız Doktor Girişi</h2>
+        </div>
+        <form method="post" action="{% url 'doktor_login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id">Doktor ID</label>
+                <input type="text" id="id" name="id" required>
+            </div>
+            <div class="form-group">
+                <label for="sifre">Yönetici Şifre</label>
+                <div style="position: relative;">
+                    <input type="password" id="sifre" name="sifre" style="padding-right: 40px; width: 82%;" required>
+                    <i id="togglePassword" style="position: absolute; right: 10px; top: 5px; cursor: pointer; font-size: 20px;">🔒</i>
+                </div>
+            </div>
+            <script>
+                var togglePassword = document.getElementById('togglePassword');
+                var passwordInput = document.getElementById('sifre');
+                togglePassword.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePassword.textContent = '🔓'; // Simgeyi açık kilit ile değiştir
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePassword.textContent = '🔒'; // Simgeyi kapalı kilit ile değiştir
+                    }
+                });
+            </script>
+            <button type="submit">Giriş Yap</button>
+        </form>
+    </div>
+</body>
+</html>

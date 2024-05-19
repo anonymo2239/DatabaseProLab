@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapor Ekle veya Düzenle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: darkblue;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group textarea {
+            resize: vertical;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #4cae4c;
+        }
+        .info-message {
+            margin-bottom: 15px;
+            background-color: #e7f3fe;
+            padding: 10px;
+            border: 1px solid #b3d7ff;
+            border-radius: 5px;
+            color: #31708f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #add8e6;
+        }
+        .delete-button {
+            background-color: #d9534f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .delete-button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Rapor Ekle veya Düzenle</h1>
+    <div class="form-container">
+        <div class="info-message">
+            Var olan raporlardan birinin tarihini girerseniz rapor düzenlenecektir, yeni rapor oluşturulmayacaktır.
+        </div>
+        <form id="reportForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="hastaSelect">Hasta Seçin</label>
+                <select id="hastaSelect" name="hastaid" required>
+                    <option value="">--Hasta Seçin--</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="raporTarihi">Rapor Tarihi</label>
+                <input type="date" id="raporTarihi" name="raporTarihi" required>
+            </div>
+            <div class="form-group">
+                <label for="raporIcerigi">Rapor İçeriği</label>
+                <textarea id="raporIcerigi" name="raporIcerigi" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <input type="hidden" name="doktorid" id="doktorid" value="{{ request.session.user_id }}">
+                <button type="submit">Kaydet</button>
+            </div>
+        </form>
+    </div>
+
+    <h2>Mevcut Raporlar</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rapor Tarihi</th>
+                <th>Rapor İçeriği</th>
+                <th>Hasta ID</th>
+                <th>Sil</th>
+            </tr>
+        </thead>
+        <tbody id="reportsTableBody">
+            <!-- Mevcut raporlar burada gösterilecek -->
+        </tbody>
+    </table>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        $(document).ready(function() {
+            // Randevusu olan hastaları yükle
+            $.ajax({
+                type: 'GET',
+                url: '{% url "get_doctor_appointments" %}',
+                success: function(response) {
+                    var hastaSelect = $('#hastaSelect');
+                    if (response.randevular.length > 0) {
+                        $.each(response.randevular, function(index, randevu) {
+                            hastaSelect.append('<option value="' + randevu.HastaID + '">' + randevu.HastaAdSoyad + '</option>');
+                        });
+                    } else {
+                        alert('Randevusu olan hasta bulunamadı.');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+
+            // Mevcut raporları yükle
+            function loadReports() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "get_patient_reports" %}',
+                    success: function(response) {
+                        var reportsTableBody = $('#reportsTableBody');
+                        reportsTableBody.empty();
+                        if (response.raporlar.length > 0) {
+                            $.each(response.raporlar, function(index, rapor) {
+                                var row = '<tr>' +
+                                    '<td>' + rapor.RaporTarihi + '</td>' +
+                                    '<td>' + rapor.RaporIcerigi + '</td>' +
+                                    '<td>' + rapor.HastaID + '</td>' +
+                                    '<td><button class="delete-button" data-id="' + rapor.RaporID + '">Sil</button></td>' +
+                                    '</tr>';
+                                reportsTableBody.append(row);
+                            });
+                        } else {
+                            reportsTableBody.append('<tr><td colspan="4">' + response.message + '</td></tr>');
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            }
+            loadReports();
+
+            // Formu gönder
+            $('#reportForm').submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "add_or_update_report" %}',
+                    data: $(this).serialize(),
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            loadReports(); // Raporları yeniden yükle
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            });
+
+            // Rapor silme
+            $(document).on('click', '.delete-button', function() {
+                var raporID = $(this).data('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "delete_report" %}',
+                    data: {
+                        'raporID': raporID,
+                        'csrfmiddlewaretoken': csrftoken
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            loadReports(); // Raporları yeniden yükle
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

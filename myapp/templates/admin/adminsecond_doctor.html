@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktor Tablosu Düzenle</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            text-align: right; /* Etiketleri sağa yasla */
+            margin-right: 10px; /* Etiket ile input arasında boşluk bırak */
+            flex: 1; /* Etiketlere esneklik ver */
+        }
+        .form-control {
+            width: 50%; /* Input genişliğini azalt */
+            flex: 2; /* Inputlara esneklik ver */
+        }
+        .form-group {
+            display: flex; /* Flexbox kullanarak label ve input'u yan yana getir */
+            align-items: center; /* İçerikleri dikey olarak ortala */
+            margin-bottom: 10px; /* Alt elemanlar arası boşluk */
+        }
+        table {
+            width: 100%; /* Tablo genişliğini artır */
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <input type="text" id="searchTerm" class="form-control" placeholder="Arama: Doktor Adı, Soyadı, ID, vb.">
+                <button id="searchBtn" class="btn btn-primary mt-2">Ara</button>
+            </div>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Doktor ID</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Uzmanlık Alanı</th>
+                        <th>Çalıştığı Hastane</th>
+                    </tr>
+                </thead>
+                <tbody id="doktorTableBody">
+                    {% for doktor in doktorlar %}
+                    <tr>
+                        <td>{{ doktor.0 }}</td>
+                        <td>{{ doktor.1 }}</td>
+                        <td>{{ doktor.2 }}</td>
+                        <td>{{ doktor.3 }}</td>
+                        <td>{{ doktor.4 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Hiç doktor bilgisi bulunamadı.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="doktorid" class="form-label">ID</label>
+                    <input type="text" class="form-control" id="doktorid" name="doktorid" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktor_ad" class="form-label">Ad</label>
+                    <input type="text" class="form-control" id="doktor_ad" name="doktor_ad" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktor_soyad" class="form-label">Soyad</label>
+                    <input type="text" class="form-control" id="doktor_soyad" name="doktor_soyad" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktor_uzmanlikalani" class="form-label">Uzmanlık Alanı</label>
+                    <input type="text" class="form-control" id="doktor_uzmanlikalani" name="doktor_uzmanlikalani" required>
+                </div>
+                <div class="form-group">
+                    <label for="doktor_calistigihastane" class="form-label">Çalıştığı Hastane</label>
+                    <input type="text" class="form-control" id="doktor_calistigihastane" name="doktor_calistigihastane" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-success" name="action" value="add">Ekle</button>
+                    <button type="submit" class="btn btn-danger" name="action" value="delete">Sil</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="update">Güncelle</button>
+                    <button type="button" onclick="window.location.href='/yonetici/giris'">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#searchBtn').on('click', function() {
+            var searchTerm = $('#searchTerm').val();
+            $.ajax({
+                type: 'GET',
+                url: '{% url "search_doctors" %}',
+                data: {
+                    term: searchTerm
+                },
+                success: function(response) {
+                    var tbody = $('#doktorTableBody');
+                    tbody.empty();
+                    if (response.doktorlar.length > 0) {
+                        $.each(response.doktorlar, function(index, doktor) {
+                            var row = '<tr>' +
+                                '<td>' + doktor[0] + '</td>' +
+                                '<td>' + doktor[1] + '</td>' +
+                                '<td>' + doktor[2] + '</td>' +
+                                '<td>' + doktor[3] + '</td>' +
+                                '<td>' + doktor[4] + '</td>' +
+                                '</tr>';
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="5">Hiç doktor bilgisi bulunamadı.</td></tr>');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+        });
+
+        $('form').on('submit', function(event) {
+            event.preventDefault();
+
+            var form_data = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: form_data,
+                success: function(response) {
+                    if (response.success) {
+                        alert('İşlem başarılı!');
+                        location.reload();
+                    } else {
+                        alert('İşlem başarısız!');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+        });
+    });
+</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

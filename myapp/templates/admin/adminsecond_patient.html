@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasta Tablosu Düzenle</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            text-align: right; /* Etiketleri sağa yasla */
+            margin-right: 10px; /* Etiket ile input arasında boşluk bırak */
+            flex: 1; /* Etiketlere esneklik ver */
+        }
+        .form-control {
+            width: 50%; /* Input genişliğini azalt */
+            flex: 2; /* Inputlara esneklik ver */
+        }
+        .form-group {
+            display: flex; /* Flexbox kullanarak label ve input'u yan yana getir */
+            align-items: center; /* İçerikleri dikey olarak ortala */
+            margin-bottom: 10px; /* Alt elemanlar arası boşluk */
+        }
+        table {
+            width: 100%; /* Tablo genişliğini artır */
+        }
+        .form-select {
+            width: 50%; /* Select genişliğini azalt */
+            flex: 2; /* Select'e esneklik ver */
+        }
+    </style>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <input type="text" id="searchTerm" class="form-control" placeholder="Arama: Hasta Adı, Soyadı, ID, vb.">
+                <button id="searchBtn" class="btn btn-primary mt-2">Ara</button>
+            </div>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hasta ID</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Doğum Tarihi</th>
+                        <th>Cinsiyet</th>
+                        <th>Telefon Numarası</th>
+                        <th>Adres</th>
+                    </tr>
+                </thead>
+                <tbody id="hastaTableBody">
+                    {% for hasta in hastalar %}
+                    <tr>
+                        <td>{{ hasta.0 }}</td>
+                        <td>{{ hasta.1 }}</td>
+                        <td>{{ hasta.2 }}</td>
+                        <td>{{ hasta.3 }}</td>
+                        <td>{{ hasta.4 }}</td>
+                        <td>{{ hasta.5 }}</td>
+                        <td>{{ hasta.6 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">Hiç hasta bilgisi bulunamadı.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="hastaid" class="form-label">ID</label>
+                    <input type="text" class="form-control" id="hastaid" name="hastaid" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_ad" class="form-label">Ad</label>
+                    <input type="text" class="form-control" id="hasta_ad" name="hasta_ad" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_soyad" class="form-label">Soyad</label>
+                    <input type="text" class="form-control" id="hasta_soyad" name="hasta_soyad" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_dogumTarihi" class="form-label">Doğum Tarihi</label>
+                    <input type="date" class="form-control" id="hasta_dogumTarihi" name="hasta_dogumTarihi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_cinsiyet" class="form-label">Cinsiyet</label>
+                    <select class="form-select" id="hasta_cinsiyet" name="hasta_cinsiyet" required>
+                        <option selected disabled value="">Seçiniz</option>
+                        <option value="Erkek">Erkek</option>
+                        <option value="Kadın">Kadın</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_telefonNo" class="form-label">Telefon Numarası</label>
+                    <input type="text" class="form-control" id="hasta_telefonNo" name="hasta_telefonNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="hasta_adres" class="form-label">Adres</label>
+                    <input type="text" class="form-control" id="hasta_adres" name="hasta_adres" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-success" name="action" value="add">Ekle</button>
+                    <button type="submit" class="btn btn-danger" name="action" value="delete">Sil</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="update">Güncelle</button>
+                    <button type="button" onclick="window.location.href='/yonetici/giris'">Geri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#searchBtn').on('click', function() {
+            var searchTerm = $('#searchTerm').val();
+            $.ajax({
+                type: 'GET',
+                url: '{% url "search_patients" %}',
+                data: {
+                    term: searchTerm
+                },
+                success: function(response) {
+                    var tbody = $('#hastaTableBody');
+                    tbody.empty();
+                    if (response.hastalar.length > 0) {
+                        $.each(response.hastalar, function(index, hasta) {
+                            var row = '<tr>' +
+                                '<td>' + hasta[0] + '</td>' +
+                                '<td>' + hasta[1] + '</td>' +
+                                '<td>' + hasta[2] + '</td>' +
+                                '<td>' + hasta[3] + '</td>' +
+                                '<td>' + hasta[4] + '</td>' +
+                                '<td>' + hasta[5] + '</td>' +
+                                '<td>' + hasta[6] + '</td>' +
+                                '</tr>';
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="7">Hiç hasta bilgisi bulunamadı.</td></tr>');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+        });
+
+        $('form').on('submit', function(event) {
+            event.preventDefault();
+
+            var form_data = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '',
+                data: form_data,
+                success: function(response) {
+                    if (response.success) {
+                        alert('İşlem başarılı!');
+                        location.reload();
+                    } else {
+                        alert('İşlem başarısız!');
+                    }
+                },
+                error: function() {
+                    alert('Sunucu hatası!');
+                }
+            });
+        });
+    });
+</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

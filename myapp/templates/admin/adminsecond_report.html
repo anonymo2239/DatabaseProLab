@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raporlar Düzenle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            background-color: #87CEEB;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .table-container {
+            width: 50%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .form-container {
+            width: 50%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .inputs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .inputs input, .inputs textarea {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button:first-child {
+            background-color: #28a745;
+            color: white;
+        }
+
+        button:nth-child(2) {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        button:nth-child(3) {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        button:last-child {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .delete-button {
+            background-color: #d9534f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .delete-button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Rapor arama
+            $('#search-form').submit(function(event) {
+                event.preventDefault();
+                var searchTerm = $('#search').val();
+                $.get("{% url 'search_reports' %}", { term: searchTerm }, function(data) {
+                    var tableBody = $('#reports-table');
+                    tableBody.empty();
+                    if (data.raporlar.length > 0) {
+                        $.each(data.raporlar, function(index, rapor) {
+                            var row = '<tr>' +
+                                '<td>' + rapor[0] + '</td>' +
+                                '<td>' + rapor[1] + '</td>' +
+                                '<td>' + rapor[2] + '</td>' +
+                                '<td>' + rapor[3] + '</td>' +
+                                '<td>' + rapor[4] + '</td>' +
+                                '<td>' + rapor[5] + '</td>' +
+                                '<td><button class="delete-button" data-id="' + rapor[0] + '">Sil</button></td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                    } else {
+                        tableBody.append('<tr><td colspan="7">Sonuç bulunamadı</td></tr>');
+                    }
+                });
+            });
+
+            // Rapor silme
+            $(document).on('click', '.delete-button', function() {
+                var raporID = $(this).data('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "delete_report" %}',
+                    data: {
+                        'raporID': raporID,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload(); // Sayfayı yeniden yükle
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Sunucu hatası!');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="table-container">
+        <h2>Raporlar</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rapor ID</th>
+                    <th>Rapor Tarihi</th>
+                    <th>Rapor İçeriği</th>
+                    <th>Hasta ID</th>
+                    <th>Doktor ID</th>
+                    <th>Yönetici ID</th>
+                    <th>Sil</th>
+                </tr>
+            </thead>
+            <tbody id="reports-table">
+                {% for rapor in raporlar %}
+                    <tr>
+                        <td>{{ rapor.0 }}</td>
+                        <td>{{ rapor.1 }}</td>
+                        <td>{{ rapor.2 }}</td>
+                        <td>{{ rapor.3 }}</td>
+                        <td>{{ rapor.4 }}</td>
+                        <td>{{ rapor.5 }}</td>
+                        <td><button class="delete-button" data-id="{{ rapor.0 }}">Sil</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-container">
+        <h2>Rapor Arama</h2>
+        <form id="search-form">
+            <input type="text" id="search" placeholder="Arama: Rapor ID, Rapor Tarihi, Rapor İçeriği, Hasta ID, Doktor ID, Yönetici ID">
+            <button type="submit">Ara</button>
+        </form>
+        <h2>Rapor Düzenleme</h2>
+        <form method="POST" action="{% url 'admin_second_report_post' %}">
+            {% csrf_token %}
+            <div class="inputs">
+                <input type="text" name="raporid" placeholder="Rapor ID">
+                <input type="text" name="rapor_tarihi" placeholder="Rapor Tarihi">
+                <textarea name="rapor_icerigi" placeholder="Rapor İçeriği"></textarea>
+                <input type="text" name="hastaid" placeholder="Hasta ID">
+                <input type="text" name="doktorid" placeholder="Doktor ID">
+                <input type="text" name="yoneticiid" placeholder="Yönetici ID">
+            </div>
+            <div class="buttons">
+                <button type="submit" name="action" value="update">Güncelle</button>
+                <button type="submit" name="action" value="delete">Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
