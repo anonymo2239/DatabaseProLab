@@ -318,4 +318,3 @@ def get_doktorlar(request):
     cursor.execute("SELECT DoktorID, CONCAT(Ad, ' ', Soyad) AS AdSoyad FROM Doktorlar WHERE CalistigiHastane = %s", [hastane])
     doktorlar = [{'id': row[0], 'ad_soyad': row[1]} for row in cursor.fetchall()]
     return JsonResponse({'doktorlar': doktorlar})
-    return JsonResponse({'doktorlar': doktorlar})
